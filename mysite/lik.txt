@@ -1,0 +1,2 @@
+for i in range(44):
+    print(l_temp.loc[-1].index[i]," ",'{0:.50f}'.format(l_temp.loc[-1][i]))

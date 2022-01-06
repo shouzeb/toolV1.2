@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <title>Link Graphs</title>
+    <style>
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+        </style>
+<body>
+
+
+
+
+<p>The selected link is : <br>{{linkNumber}}</p>
+<p>The URL of selected link is : <br>{{cars}}</p>
+<p>Mean value is: <b>{{mean}}</b></p>
+<p>Standard Deviation  value is: <b>{{std}}</b></p>
+<p>First quartile  value is: <b>{{qur1}}</b></p>
+<p>Median value is: <b>{{median}}</b></p>
+<p>Third quartile  value is: <b>{{qur2}}</b></p>
+
+<table id="table" style="width: 100%;  text-align: left;">
+    <tr>
+        <td>Original</td>
+        <td>Predicted</td>
+    </tr>
+    <tr>
+        <td>{{linkNumber}}</td>
+        <td>{{ predictedName }}</td>
+    </tr>
+    <tr>
+        <td>Non_VPN class {{linkNumber}} </td>
+        <td>{{ bpsClasses }}</td>
+    </tr>
+    <tr>
+        <td>Non_VPN class {{linkNumber}}</td>
+        <td>{{ bpsWithoutClasses }}</td>
+    </tr>
+  </table>
+
+<img src = "data:image/png;base64,{{ data }}" alt = "" height="70%", width="70%">
+<br>
+<br>
+<img src = "data:image/png;base64,{{ packetsPerSecond }}" alt = "" height="70%", width="70%">
+<br>
+<br>
+<img src = "data:image/png;base64,{{ Instantaneous }}" alt = "" height="70%", width="70%">
+<br>
+<br>
+<img src = "data:image/png;base64,{{ shortOnOffCycle }}" alt = "" height="70%", width="70%">
+<br>
+<br>
+<img src = "data:image/png;base64,{{ normalized }}" alt = "" height="70%", width="70%">
+<br>
+<br>
+<img src = "data:image/png;base64,{{ bytesPerPeak | safe }}" alt = "" height="70%", width="70%">
+
+
+<a href="{% url 'webpage1' %}">Click here to back to main page.</a>
+</body>
+</html>

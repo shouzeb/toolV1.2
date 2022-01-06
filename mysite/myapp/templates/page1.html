@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1> </h1>
+
+<p>Please select a link from dropdown to generate its graphs: </p>
+
+<form action="{% url 'webpage2'%}">
+  <label for="cars">Choose a link:</label>
+  <select name="cars" id="cars">
+    <option value="Link 1,https://youtu.be/CWYv7xlKydw">Link 1</option>
+    <option value="Link 2,https://youtu.be/sO1ctUNQ1k8">Link 2</option>
+    <option value="Link 3,https://youtu.be/B6LNvy7Wdp4">Link 3</option>
+    <option value="Link 31,https://youtu.be/hGyJTcdfR1E">Link 31</option>
+    <option value="Link 32,https://youtu.be/cUoohARM8us">Link 32</option>
+    <option value="Link 33,https://youtu.be/Swvui2mi_iU">Link 33</option>
+    <option value="Link 34,https://youtu.be/Y_XM3Bu-4yc">Link 34</option>
+    <option value="Link 35,https://youtu.be/wX75Z-4MEoM">Link 35</option>
+    <option value="Link 36,https://youtu.be/jma9hFQSCDk">Link 36</option>
+    <option value="Link 38,https://youtu.be/WUODHf0IT5U">Link 38</option>
+    <option value="Link 39,https://youtu.be/ZzXGSFVbVvU">Link 39</option>
+    <option value="Link 40,https://youtu.be/db1u06fojyc">Link 40</option>
+    <option value="Link 41,https://youtu.be/LkVorQ0EAU8">Link 41</option>
+    <option value="Link 85,https://youtu.be/du4DDUcC2gw">Link 85</option>
+    <option value="Link 86,https://youtu.be/6NPTslF68Q0">Link 86</option>
+    <option value="Link 87,https://youtu.be/TpL4vT8pyoY">Link 87</option>
+    <option value="Link 88,https://youtu.be/TKRaos1T_as">Link 88</option>
+    <option value="Link 89,https://youtu.be/KfetEOtv9qI">Link 89</option>
+    <option value="Link 90,https://youtu.be/ZfJKBpVzrO0">Link 90</option>
+    <option value="Link 91,https://youtu.be/6-66D9J5PkY">Link 91</option>
+    <option value="Link 92,https://youtu.be/frwEQKILYcY">Link 92</option>
+    <option value="Link 93,https://youtu.be/WK14B3F-j-s">Link 93</option>
+    <option value="Link 94,https://youtu.be/rdDwwlyB_3U">Link 94</option>
+    <option value="Link 95,https://youtu.be/ytMYHvHrs_s">Link 95</option>
+    <option value="Link 96,https://youtu.be/4zHnoqd5vVc">Link 96</option>
+    <option value="Link 111,https://youtu.be/uMKE_julLAY">Link 111</option>
+    <option value="Link 112,https://youtu.be/7OWWk1F4_Yw">Link 112</option>
+    <option value="Link 113,https://youtu.be/3yFGLIb5M8M">Link 113</option>
+    <option value="Link 114,https://youtu.be/plREmdqJpDY">Link 114</option>
+    <option value="Link 115,https://youtu.be/LaRgep8-b_w">Link 115</option>
+    <option value="Link 116,https://youtu.be/-dyirBgg6xw">Link 116</option>
+    <option value="Link 117,https://youtu.be/0x2nDLxzZiI">Link 117</option>
+    <option value="Link 118,https://youtu.be/FhobuWZre6g">Link 118</option>
+    <option value="Link 119,https://youtu.be/sLYazynm_1M">Link 119</option>
+    <option value="Link 120,https://youtu.be/3qUkTyPlTAQ">Link 120</option>
+    <option value="Link 121,https://youtu.be/lr-aV1qCggs">Link 121</option>
+    <option value="Link 122,https://youtu.be/waJH2ltaMmA">Link 122</option>
+    <option value="Link 123,https://youtu.be/speVEHADwlc">Link 123</option>
+    <option value="Link 124,https://youtu.be/PTpoj4f25dk">Link 124</option>
+    <option value="Link 125,https://youtu.be/fKpw9uGIy40">Link 125</option>
+    <option value="Link 126,https://youtu.be/aP3FahmEp6U">Link 126</option>
+    <option value="Link 128,https://youtu.be/Isp4L0JeF2o">Link 128</option>
+    <option value="Link 129,https://youtu.be/KnjYIRiRf6k">Link 129</option>
+    
+
+    
+
+
+
+    
+  </select>
+
+  <input type="submit" value="Generate Graphs">
+</form>
+<p>Choose a file pcap file from local drive to generate its graphs: </p>
+<form  method= "POST" action ="{% url 'upload'%}" enctype = "multipart/form-data">
+{% csrf_token %}
+<input type = "file" name = "myFile" accept=".pcap">
+<input type = "submit" name = "submit" size="50%" value="Generate Graphs">
+</form>
+<br>
+<br>
+<p>To detect video being played on remote pc click below: </p>
+
+<form  method= "POST" action ="{% url 'remotePcTesting'%}" enctype = "multipart/form-data">
+{% csrf_token %}
+<input type = "submit" name = "submit" size="50%" value="Detect Video">
+</form>
+<br>
+<br>
+<p>Links information table: </p>
+<br>
+
+<table id="table" class="display" style="width: 100%;  text-align: left;">
+  {{loaded_data | safe}}
+</table>
+</body>
+</html>

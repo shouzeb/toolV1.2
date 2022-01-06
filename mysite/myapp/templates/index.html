@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pcap graphs </title>
+        <style>
+            table {
+              font-family: arial, sans-serif;
+              border-collapse: collapse;
+              width: 100%;
+            }
+            
+            td, th {
+              border: 1px solid #dddddd;
+              text-align: left;
+              padding: 8px;
+            }
+            
+            tr:nth-child(even) {
+              background-color: #dddddd;
+            }
+            </style>
+    </head>
+<body>
+{% if something %}
+<p>Hello</p>
+<p>Here is your selecetd file {{sum}}</p>
+<p>Mean value is: <b>{{mean}}</b></p>
+<p>Standard Deviation  value is: <b>{{std}}</b></p>
+<p>First quartile  value is: <b>{{qur1}}</b></p>
+<p>Median value is: <b>{{median}}</b></p>
+<p>Third quartile  value is: <b>{{qur2}}</b></p>
+<table id="table" class="display" style="width: 100%;  text-align: left;">
+    <tr>
+        <td>Original</td>
+        <td>Predicted</td>
+    </tr>
+    <tr>
+        <td>Pcap file from local storage</td>
+        <td>{{ predictedName }}</td>
+    </tr>
+    <tr>
+        <td>Non_VPN pcap</td>
+        <td>{{ bpsClasses }}</td>
+    </tr>
+    <tr>
+        <td>Non_VPN pcap</td>
+        <td>{{ bpsWithoutClasses }}</td>
+    </tr>
+  </table>
+{% endif %}
+<img src = "data:image/png;base64,{{ data|safe  }}" alt = "" height="70%", width="70%">
+<br>
+<br>
+<img src = "data:image/png;base64,{{ packetsPerSecond|safe }}" alt = "" height="70%", width="70%">
+<br>
+<br>
+<img src = "data:image/png;base64,{{ Instantaneous }}" alt = "" height="70%", width="70%">
+<br>
+<br>
+<img src = "data:image/png;base64,{{ shortOnOffCycle }}" alt = "" height="70%", width="70%">
+<br>
+<br>
+<img src = "data:image/png;base64,{{ normalized }}" alt = "" height="70%", width="70%">
+<br>
+<br>
+<img src = "data:image/png;base64,{{ bytesPerPeak | safe }}" alt = "" height="70%", width="70%">
+<br>
+<a href="{% url 'webpage1' %}">Click here to back to main page.</a>
+</body>
+</html>
