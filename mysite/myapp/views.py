@@ -209,73 +209,17 @@ def webpage2(request):
                 BPS_list.append(0)
         BPS_list.append(linkNumberr)
         writer.writerow(BPS_list)
-    model = load_model(r'E:\\ads\\modelfiles\\NonVPN Model\\NonVPN.h5')
-    l_temp=pd.read_pickle(r'E:\\ads\\modelfiles\\NonVPN Model\\NonVPN.pkl')
-
     array = BPS_list[0:120]
 
     #BPS model
-    x = []
-    df =  pd.DataFrame (array, columns = ['column_name'])
-    df['column_name'] = df['column_name'].astype(int)
-    #name = str(df[i,121:].values.tolist())
-    x = df['column_name'] #
-    v=4459355
-
-    x1=np.vectorize(norm)(x,v)
-
-    labels = np.asarray(l_temp, dtype = np.int8)
-    x3 = x1.reshape(1,120,1)
-    y_pred1 = model.predict(x3)
-    l_temp.loc[-1]=y_pred1[0]
-    predict_name = l_temp.loc[-1].idxmax()
+    predict_name = BPSModel(array)
 
     #detect BPS - Classes (VPN vs NonVPN)
-
-    model = load_model(r'E:\\ads\\modelfiles\\BPS - Classes (VPN vs NonVPN)(pending)\\Classes.h5')
-    l_temp=pd.read_pickle(r'E:\\ads\\modelfiles\\BPS - Classes (VPN vs NonVPN)(pending)\\Classes.pkl')
-    x = []
-    df =  pd.DataFrame (array, columns = ['column_name'])
-    df['column_name'] = df['column_name'].astype(int)
-    #name = str(df[i,121:].values.tolist())
-    x = df['column_name'] #
-    name  = "link1"
-    v=4459355
-    x1=np.vectorize(norm)(x,v)
-
-    labels = np.asarray(l_temp, dtype = np.int8)
-    x3 = x1.reshape(1,120,1)
-    y_pred1 = model.predict(x3)
-
-    l_temp.loc[-1]=y_pred1[0]
-
-    predict_name_BPS_Classes = l_temp.loc[-1].idxmax()
-    #print("BPS - Classes (VPN vs NonVPN): ",predict_name_BPS_Classes)
-
+    predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
 
     #BPS - Without Classes (VPN vs NonVPN)
-
-    model = load_model(r'E:\\ads\\modelfiles\\BPS - Without Classes (VPN vs NonVPN)(pending)\\Without_Classes.h5')
-    l_temp=pd.read_pickle(r'E:\\ads\\modelfiles\\BPS - Without Classes (VPN vs NonVPN)(pending)\\Without Classes.pkl')
-    x = []
-    df =  pd.DataFrame (array, columns = ['column_name'])
-    df['column_name'] = df['column_name'].astype(int)
-    #name = str(df[i,121:].values.tolist())
-    x = df['column_name'] #
-    name  = "link1"
-    v=4459355
-    x1=np.vectorize(norm)(x,v)
-
-    labels = np.asarray(l_temp, dtype = np.int8)
-    x3 = x1.reshape(1,120,1)
-    y_pred1 = model.predict(x3)
-
-    l_temp.loc[-1]=y_pred1[0]
-
-    predict_name_BPS_Without_Classes = l_temp.loc[-1].idxmax()
-    #print("BPS - Without Classes (VPN vs NonVPN): ",predict_name_BPS_Without_Classes)
-
-
+    predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
+    
     #packets per second 
     with open(r"E:\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
@@ -438,6 +382,74 @@ def webpage2(request):
     
     
     return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"linkNumber":linkNumberr,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes})
+def BPSModel(array):
+
+    #BPS model
+    model = load_model(r"E:\8-ModelsIntegrationCode\Code\BPSModel\NonVPN_16-12-2021-17-21_9830494.h5")
+    import pickle5 as pickle
+    data = ""
+    with open(r"E:\8-ModelsIntegrationCode\Code\BPSModel\NonVPN_16-12-2021-17-21_9830494.pkl", "rb") as fh:
+      data = pickle.load(fh)
+    l_temp=(data)
+    x = []
+    df =  pd.DataFrame (array, columns = ['column_name'])
+    df['column_name'] = df['column_name'].astype(int)
+    #name = str(df[i,121:].values.tolist())
+    x = df['column_name'] #
+
+    v=int(model.split("_")[-1].split(".")[0])
+
+    x1=np.vectorize(norm)(x,v)
+    labels = np.asarray(l_temp, dtype = np.int8)
+    x3 = x1.reshape(1,120,1)
+    y_pred1 = model.predict(x3)
+    l_temp.loc[-1]=y_pred1[0]
+    predict_name = l_temp.loc[-1].idxmax()
+    return predict_name
+
+def BPSClassesVPNvsNonVPN(array):
+    model = load_model(r'E:\\ads\\modelfiles\\BPS - Classes (VPN vs NonVPN)(pending)\\Classes.h5')
+    l_temp=pd.read_pickle(r'E:\\ads\\modelfiles\\BPS - Classes (VPN vs NonVPN)(pending)\\Classes.pkl')
+    x = []
+    df =  pd.DataFrame (array, columns = ['column_name'])
+    df['column_name'] = df['column_name'].astype(int)
+    #name = str(df[i,121:].values.tolist())
+    x = df['column_name'] #
+    name  = "link1"
+    v=4459355
+    x1=np.vectorize(norm)(x,v)
+
+    labels = np.asarray(l_temp, dtype = np.int8)
+    x3 = x1.reshape(1,120,1)
+    y_pred1 = model.predict(x3)
+
+    l_temp.loc[-1]=y_pred1[0]
+
+    predict_name_BPS_Classes = l_temp.loc[-1].idxmax()
+    return predict_name_BPS_Classes
+
+def BPSWithoutClassesVPNvsNonVPN(array):
+    model = load_model(r'E:\\ads\\modelfiles\\BPS - Without Classes (VPN vs NonVPN)(pending)\\Without_Classes.h5')
+    l_temp=pd.read_pickle(r'E:\\ads\\modelfiles\\BPS - Without Classes (VPN vs NonVPN)(pending)\\Without Classes.pkl')
+    x = []
+    df =  pd.DataFrame (array, columns = ['column_name'])
+    df['column_name'] = df['column_name'].astype(int)
+    #name = str(df[i,121:].values.tolist())
+    x = df['column_name'] #
+    name  = "link1"
+    v=4459355
+    x1=np.vectorize(norm)(x,v)
+
+    labels = np.asarray(l_temp, dtype = np.int8)
+    x3 = x1.reshape(1,120,1)
+    y_pred1 = model.predict(x3)
+
+    l_temp.loc[-1]=y_pred1[0]
+
+    predict_name_BPS_Without_Classes = l_temp.loc[-1].idxmax()
+    return predict_name_BPS_Without_Classes
+
+
 
 def remotePcTesting(request):
     #result = request.GET["cars"].split(",")[1]
@@ -606,68 +618,18 @@ def remotePcTesting(request):
                 BPS_list.append(0)
         BPS_list.append(linkNumberr)
         writer.writerow(BPS_list)
-    model = load_model(r'E:\\ads\\modelfiles\\NonVPN Model\\NonVPN.h5')
-    l_temp=pd.read_pickle(r'E:\\ads\\modelfiles\\NonVPN Model\\NonVPN.pkl')
-
+    
     array = BPS_list[0:120]
-    x = []
-    df =  pd.DataFrame (array, columns = ['column_name'])
-    df['column_name'] = df['column_name'].astype(int)
-    #name = str(df[i,121:].values.tolist())
-    x = df['column_name'] #
-    v=4459355
-    x1=np.vectorize(norm)(x,v)
-    labels = np.asarray(l_temp, dtype = np.int8)
-    x3 = x1.reshape(1,120,1)
-    y_pred1 = model.predict(x3)
-    l_temp.loc[-1]=y_pred1[0]
-    predict_name = l_temp.loc[-1].idxmax()
+    
+    #BPS model
+    predict_name = BPSModel(array)
 
     #detect BPS - Classes (VPN vs NonVPN)
-
-    model = load_model(r'E:\\ads\\modelfiles\\BPS - Classes (VPN vs NonVPN)(pending)\\Classes.h5')
-    l_temp=pd.read_pickle(r'E:\\ads\\modelfiles\\BPS - Classes (VPN vs NonVPN)(pending)\\Classes.pkl')
-    x = []
-    df =  pd.DataFrame (array, columns = ['column_name'])
-    df['column_name'] = df['column_name'].astype(int)
-    #name = str(df[i,121:].values.tolist())
-    x = df['column_name'] #
-    name  = "link1"
-    v=4459355
-    x1=np.vectorize(norm)(x,v)
-
-    labels = np.asarray(l_temp, dtype = np.int8)
-    x3 = x1.reshape(1,120,1)
-    y_pred1 = model.predict(x3)
-
-    l_temp.loc[-1]=y_pred1[0]
-
-    predict_name_BPS_Classes = l_temp.loc[-1].idxmax()
-    #print("BPS - Classes (VPN vs NonVPN): ",predict_name_BPS_Classes)
-
+    predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
 
     #BPS - Without Classes (VPN vs NonVPN)
-
-    model = load_model(r'E:\\ads\\modelfiles\\BPS - Without Classes (VPN vs NonVPN)(pending)\\Without_Classes.h5')
-    l_temp=pd.read_pickle(r'E:\\ads\\modelfiles\\BPS - Without Classes (VPN vs NonVPN)(pending)\\Without Classes.pkl')
-    x = []
-    df =  pd.DataFrame (array, columns = ['column_name'])
-    df['column_name'] = df['column_name'].astype(int)
-    #name = str(df[i,121:].values.tolist())
-    x = df['column_name'] #
-    name  = "link1"
-    v=4459355
-    x1=np.vectorize(norm)(x,v)
-
-    labels = np.asarray(l_temp, dtype = np.int8)
-    x3 = x1.reshape(1,120,1)
-    y_pred1 = model.predict(x3)
-
-    l_temp.loc[-1]=y_pred1[0]
-
-    predict_name_BPS_Without_Classes = l_temp.loc[-1].idxmax()
-    #print("BPS - Without Classes (VPN vs NonVPN): ",predict_name_BPS_Without_Classes)
-
+    predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
+    
 
     #packets per second 
     with open(r"E:\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
@@ -1205,64 +1167,18 @@ def upload(request):
                 BPS_list.append(0)
         BPS_list.append("PcapFromLocalDrive")
         writer.writerow(BPS_list)
-    model = load_model(r'E:\\ads\\modelfiles\\NonVPN Model\\NonVPN.h5')
-    l_temp=pd.read_pickle(r'E:\\ads\\modelfiles\\NonVPN Model\\NonVPN.pkl')
-
+    
     array = BPS_list[0:120]
-    x = []
-    df =  pd.DataFrame (array, columns = ['column_name'])
-    df['column_name'] = df['column_name'].astype(int)
-    #name = str(df[i,121:].values.tolist())
-    x = df['column_name'] #
-    v=4459355
-    x1=np.vectorize(norm)(x,v)
-    labels = np.asarray(l_temp, dtype = np.int8)
-    x3 = x1.reshape(1,120,1)
-    y_pred1 = model.predict(x3)
-    l_temp.loc[-1]=y_pred1[0]
-    predict_name = l_temp.loc[-1].idxmax()
+
+    #BPS model
+    predict_name = BPSModel(array)
 
     #detect BPS - Classes (VPN vs NonVPN)
-
-    model = load_model(r'E:\\ads\\modelfiles\\BPS - Classes (VPN vs NonVPN)(pending)\\Classes.h5')
-    l_temp=pd.read_pickle(r'E:\\ads\\modelfiles\\BPS - Classes (VPN vs NonVPN)(pending)\\Classes.pkl')
-    x = []
-    df =  pd.DataFrame (array, columns = ['column_name'])
-    df['column_name'] = df['column_name'].astype(int)
-    #name = str(df[i,121:].values.tolist())
-    x = df['column_name'] #
-    name  = "link1"
-    v=4459355
-    x1=np.vectorize(norm)(x,v)
-
-    labels = np.asarray(l_temp, dtype = np.int8)
-    x3 = x1.reshape(1,120,1)
-    y_pred1 = model.predict(x3)
-
-    l_temp.loc[-1]=y_pred1[0]
-
-    predict_name_BPS_Classes = l_temp.loc[-1].idxmax()
-    #print("BPS - Classes (VPN vs NonVPN): ",predict_name_BPS_Classes)
-
+    predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
 
     #BPS - Without Classes (VPN vs NonVPN)
-    model = load_model(r'E:\\ads\\modelfiles\\BPS - Without Classes (VPN vs NonVPN)(pending)\\Without_Classes.h5')
-    l_temp=pd.read_pickle(r'E:\\ads\\modelfiles\\BPS - Without Classes (VPN vs NonVPN)(pending)\\Without Classes.pkl')
-    x = []
-    df =  pd.DataFrame (array, columns = ['column_name'])
-    df['column_name'] = df['column_name'].astype(int)
-    #name = str(df[i,121:].values.tolist())
-    x = df['column_name'] #
-    name  = "link1"
-    v=4459355
-    x1=np.vectorize(norm)(x,v)
-    labels = np.asarray(l_temp, dtype = np.int8)
-    x3 = x1.reshape(1,120,1)
-    y_pred1 = model.predict(x3)
-    l_temp.loc[-1] = y_pred1[0]
-    predict_name_BPS_Without_Classes = l_temp.loc[-1].idxmax()
-    #print("BPS - Without Classes (VPN vs NonVPN): ",predict_name_BPS_Without_Classes)
-
+    predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
+    
     #packets per second 
     with open(r"E:\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
@@ -1305,7 +1221,7 @@ def upload(request):
         plt.close()
     
     
-            #writer.writerow(BPS_list)
+        #writer.writerow(BPS_list)
 
     
 
