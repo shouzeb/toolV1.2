@@ -219,7 +219,9 @@ def webpage2(request):
     #name = str(df[i,121:].values.tolist())
     x = df['column_name'] #
     v=4459355
+
     x1=np.vectorize(norm)(x,v)
+    
     labels = np.asarray(l_temp, dtype = np.int8)
     x3 = x1.reshape(1,120,1)
     y_pred1 = model.predict(x3)
