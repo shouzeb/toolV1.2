@@ -166,8 +166,9 @@ def webpage2(request):
                     sum=sum+int(col[i])
                     yy.append(sum)
     xx=range(1,len(yy)+1)   
-                 
+
     plt.rcParams["figure.figsize"] = (7,2)
+    
     plt.rcParams['figure.dpi'] = 600
     plt.bar(xx,yy, color = 'black', width = 0.72 )
     plt.xlabel('Time(s)')
