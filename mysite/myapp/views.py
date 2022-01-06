@@ -165,7 +165,8 @@ def webpage2(request):
                 else:
                     sum=sum+int(col[i])
                     yy.append(sum)
-    xx=range(1,len(yy)+1)                
+    xx=range(1,len(yy)+1)   
+                 
     plt.rcParams["figure.figsize"] = (7,2)
     plt.rcParams['figure.dpi'] = 600
     plt.bar(xx,yy, color = 'black', width = 0.72 )
@@ -221,7 +222,7 @@ def webpage2(request):
     v=4459355
 
     x1=np.vectorize(norm)(x,v)
-    
+
     labels = np.asarray(l_temp, dtype = np.int8)
     x3 = x1.reshape(1,120,1)
     y_pred1 = model.predict(x3)
