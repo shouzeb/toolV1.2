@@ -73,7 +73,7 @@ def webpage2(request):
         urlF = str(result)
         amount = 1
         link100_url = urlF
-        link100_duration = 10
+        link100_duration = 120
         filename = harvest_video(amount,filename,link100_url,link100_duration)
         print(filename)
         i+=1
@@ -237,7 +237,7 @@ def webpage2(request):
     predict_name_DF = testingWithFingerprint(array)
 
     #flowpic
-    predict_name_FP = testingWithFlowpic(filename) 
+    predict_name_FP,uriFP = testingWithFlowpic(filename) 
     #packets per second 
     with open(r"E:\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
@@ -389,7 +389,7 @@ def webpage2(request):
     plt.close()
     BPS_list.clear()
      
-    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"linkNumber":linkNumberr,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP})
+    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":linkNumberr,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP})
 
 def BPSModel(array):
 
@@ -665,6 +665,16 @@ def testingWithFlowpic(filename):
     plt.savefig(filename,dpi=60)
     print("saved image filename is ",filename)
     # plt.savefig(filenameT,dpi=600)
+
+    #sending data for plot generation on front page
+    fig=plt.gcf()
+    buf = io.BytesIO()
+    fig.savefig(buf,format='png')
+    buf.seek(0)
+    string = base64.b64encode(buf.read())
+    uri3 = urllib.parse.quote(string)
+
+
     plt.clf()
     
     model = load_model(r"E:\8-ModelsIntegrationCode\Code\FlowPicsModel\flowpics\saveModel\NonVpnAutoFlowPicModel.h5")
@@ -674,7 +684,7 @@ def testingWithFlowpic(filename):
     model.predict(img)
     linksList = ["link1","link2","link3","link31","link32","link33","link34","link35","link36","link38","link39","link40","link41","link85","link86","link87","link88","link89","link90","link91","link92","link93","link94","link95","link96","link111","link112","link113","link114","link115","link116","link117","link118","link119","link120","link121","link122","link123","link124","link125","link126","link128","link129"]
     predict_name = linksList[numpy.argmax(model.predict(img))]
-    return predict_name
+    return predict_name,uri3
     
 def load_image(filename):
     # load the image
@@ -865,7 +875,7 @@ def remotePcTesting(request):
     #DF model 
     predict_name_DF = testingWithFingerprint(array)
     #flowpic
-    predict_name_FP = testingWithFlowpic(filename)
+    predict_name_FP,uriFP = testingWithFlowpic(filename)
     #packets per second 
     with open(r"E:\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
@@ -1027,7 +1037,7 @@ def remotePcTesting(request):
 
     
     
-    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"linkNumber":linkNumberr,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP})
+    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":linkNumberr,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP})
 
 def clickOnAd(driver):
     try:
@@ -1236,7 +1246,6 @@ def _replaceitem(x):
 from django.shortcuts import render, HttpResponse
 
 
-
 def upload(request):
     if request.method == "POST":
         file_name = request.FILES["myFile"].file.name
@@ -1405,7 +1414,8 @@ def upload(request):
     #DF model 
     predict_name_DF = testingWithFingerprint(array)
     #flowpic
-    predict_name_FP = testingWithFlowpic(file_name)
+    predict_name_FP,uriFP = testingWithFlowpic(file_name)
+
     #packets per second 
     with open(r"E:\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
@@ -1590,4 +1600,4 @@ def upload(request):
     
 
 
-    return render(request ,"index.html",{"something":True,"sum":file_name,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP})
+    return render(request ,"index.html",{"something":True,"sum":file_name,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP})
