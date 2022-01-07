@@ -30,22 +30,30 @@
 <p>First quartile  value is: <b>{{qur1}}</b></p>
 <p>Median value is: <b>{{median}}</b></p>
 <p>Third quartile  value is: <b>{{qur2}}</b></p>
-
+<p>Original Link : <b>{{linkNumber}}</b></p>
 <table id="table" style="width: 100%;  text-align: left;">
     <tr>
-        <td>Original</td>
-        <td>Predicted</td>
+        <td>Model</td>
+        <td>Prediction</td>
     </tr>
     <tr>
-        <td>{{linkNumber}}</td>
+        <td>BPS model </td>
         <td>{{ predictedName }}</td>
     </tr>
     <tr>
-        <td>Non_VPN class {{linkNumber}} </td>
+      <td>Differential fingerprinting  </td>
+      <td>{{ DF }}</td>
+  </tr>
+  <tr>
+    <td>Flowpic  </td>
+    <td>{{ FP }}</td>
+</tr>
+    <tr>
+        <td>BPS - Classes (VPN vs NonVPN) </td>
         <td>{{ bpsClasses }}</td>
     </tr>
     <tr>
-        <td>Non_VPN class {{linkNumber}}</td>
+        <td>BPS - Without Classes (VPN vs NonVPN) {{linkNumber}}</td>
         <td>{{ bpsWithoutClasses }}</td>
     </tr>
   </table>
