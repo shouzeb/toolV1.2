@@ -405,6 +405,7 @@ def BPSModel(array):
     df =  pd.DataFrame (array, columns = ['column_name'])
     df['column_name'] = df['column_name'].astype(int)
     #name = str(df[i,121:].values.tolist())
+
     x = df['column_name'] #
 
     v=int(model_path.split("_")[-1].split(".")[0])
@@ -1208,10 +1209,6 @@ def harvest_video_remote(amount,name,duration):
         #print('Capturing  1080P')
         #downloadVideo("1080P",name,url,duration)
     return filename_
-
-
-
-
 
 
 def read_pcap(filename, fields=[], display_filter="", timeseries=False, strict=False):
