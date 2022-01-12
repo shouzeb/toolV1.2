@@ -7,12 +7,17 @@ import os
 import sys
 import shutil
 from csv import DictWriter
-import matplotlib
+
 from numpy import string_
+import matplotlib
+
 matplotlib.use('Agg')
+
 import numpy as np
 import urllib,base64
 import matplotlib.pyplot as plt
+import matplotlib.pyplot as pltt
+plt.ioff()
 import io
 import csv
 import pandas as pd
@@ -23,16 +28,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-import pandas as pd 
-plt.ioff()
+
 from keras.models import load_model
 from scapy.all import *
 
-import matplotlib.pyplot as plt
+
 from keras.models import load_model
 from keras.preprocessing.image import load_img
 from keras.preprocessing.image import img_to_array
-import pandas as pd
 from scapy.packet import Padding
 from scapy.utils import rdpcap
 from scapy.layers.inet import IP, UDP
@@ -73,7 +76,7 @@ def webpage2(request):
         urlF = str(result)
         amount = 1
         link100_url = urlF
-        link100_duration = 120
+        link100_duration = 10
         filename = harvest_video(amount,filename,link100_url,link100_duration)
         print(filename)
         i+=1
@@ -119,7 +122,9 @@ def webpage2(request):
         BPS_list.append(linkNumberr)
         writer.writerow(BPS_list)
     #bytes per second 
-  
+    plt.close()
+    plt.cla()
+    plt.clf()
     x = []
     y = []
     array = []
@@ -201,43 +206,7 @@ def webpage2(request):
     BPS_list.clear()
     plt.close()
 
-    #model predication
-    #------------------- df  = list of BPS -----------------
-    BPS_list=[]
-    with open("E:\\ads\\toolV1.2\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
-        writer = csv.writer(csv_file)
-        fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
-        file = filename
-        temp=read_pcap(file, fields, timeseries=True, strict=True)
-        temp["frame.time_epoch"]=pd.to_datetime(temp["frame.time_epoch"],unit='s')
-        source_address=temp[temp["ip.dst"] == mostOccuredIp]
-        bytes_per_second=source_address.resample("s", on='frame.time_epoch').sum()
-        BPS_list=bytes_per_second['frame.len'][0:120]
-        BPS_list = list(map(_replaceitem, BPS_list))
-        lenBPS = len(BPS_list)
-        if lenBPS < 120:
-            print("len is less")
-            diff = 120- lenBPS
-            for d in range(diff):
-                BPS_list.append(0)
-        BPS_list.append(linkNumberr)
-        writer.writerow(BPS_list)
-    array = BPS_list[0:120]
-
-    #BPS model
-    predict_name = BPSModel(array)
-
-    #detect BPS - Classes (VPN vs NonVPN)
-    predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
-
-    #BPS - Without Classes (VPN vs NonVPN)
-    predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
     
-    #Differtinal finger print 
-    predict_name_DF = testingWithFingerprint(array)
-
-    #flowpic
-    predict_name_FP,uriFP = testingWithFlowpic(filename) 
     #packets per second 
     with open(r"E:\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
@@ -388,17 +357,62 @@ def webpage2(request):
     BPS_list.clear()
     plt.close()
     BPS_list.clear()
-     
+
+
+    plt.close()
+    plt.cla()
+    plt.clf()
+    #model predication
+    #------------------- df  = list of BPS -----------------
+    BPS_list=[]
+    with open("E:\\ads\\toolV1.2\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+        writer = csv.writer(csv_file)
+        fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
+        file = filename
+        temp=read_pcap(file, fields, timeseries=True, strict=True)
+        temp["frame.time_epoch"]=pd.to_datetime(temp["frame.time_epoch"],unit='s')
+        source_address=temp[temp["ip.dst"] == mostOccuredIp]
+        bytes_per_second=source_address.resample("s", on='frame.time_epoch').sum()
+        BPS_list=bytes_per_second['frame.len'][0:120]
+        BPS_list = list(map(_replaceitem, BPS_list))
+        lenBPS = len(BPS_list)
+        if lenBPS < 120:
+            print("len is less")
+            diff = 120- lenBPS
+            for d in range(diff):
+                BPS_list.append(0)
+        BPS_list.append(linkNumberr)
+        writer.writerow(BPS_list)
+    array = BPS_list[0:120]
+
+    #BPS model
+    predict_name = BPSModel(array)
+
+    #detect BPS - Classes (VPN vs NonVPN)
+    predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
+
+    #BPS - Without Classes (VPN vs NonVPN)
+    predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
+    
+    #Differtinal finger print 
+    predict_name_DF = testingWithFingerprint(array)
+
+    #flowpic
+    predict_name_FP,uriFP = testingWithFlowpic(filename)  
+    plt.close()
+    plt.cla()
+    plt.clf()
+
     return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":linkNumberr,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP})
 
 def BPSModel(array):
 
     #BPS model
-    model_path=r"E:\8-ModelsIntegrationCode\Code\BPSModel\NonVPN_16-12-2021-17-21_9830494.h5"       
+    model_path=r"E:\8-ModelsIntegrationCode\updatedModels\bpsModel\NonVPN_04-01-2022-10-46_9830494.h5"       
     model = load_model(model_path)
     import pickle5 as pickle
     data = ""
-    with open(r"E:\8-ModelsIntegrationCode\Code\BPSModel\NonVPN_16-12-2021-17-21_9830494.pkl", "rb") as fh:
+    with open(r"E:\8-ModelsIntegrationCode\updatedModels\bpsModel\NonVPN_04-01-2022-10-46_9830494.pkl", "rb") as fh:
       data = pickle.load(fh)
     l_temp=(data)
     x = []
@@ -463,16 +477,16 @@ def BPSWithoutClassesVPNvsNonVPN(array):
 
 def testingWithFingerprint(BPS_list):
     #checking with BPS model        
-    model_path=r"E:\8-ModelsIntegrationCode\Code\DFModel\Differential_NonVPN_LIVE.h5"      
+    model_path=r"E:\8-ModelsIntegrationCode\updatedModels\Differential_NonVPN_LIVE_FP3.h5"     
     model = load_model(model_path)
     #l_temp=pd.read_pickle(r"E:\8-ModelsIntegrationCode\Code\DFModel\Train_FP1.pkl")
     import pickle5 as pickle
     data = ""
-    with open(r"E:\8-ModelsIntegrationCode\Code\BPSModel\NonVPN_16-12-2021-17-21_9830494.pkl", "rb") as fh:
+    with open(r"E:\8-ModelsIntegrationCode\updatedModels\Train_FP1.pkl", "rb") as fh:
       data = pickle.load(fh)
     l_temp=(data)
     array = BPS_list[0:21]
-    v=27738778#change this
+    v=769000000000000#change this
     x1=np.vectorize(norm)(array,v)
     labels = np.asarray(l_temp, dtype = np.int8)
     x3 = x1.reshape(1,21,1)
@@ -533,9 +547,9 @@ def preditWithFingerprint(BPS_list):
     data.replace(0,1,inplace=True)
     for i in range (1,len(data.columns)):
         #print(i)
-        dif = (data.iloc[:,i]-data.iloc[:,i-1])                #FP1
+        #dif = (data.iloc[:,i]-data.iloc[:,i-1])                #FP1
         # dif = (data.iloc[:,i]-data.iloc[:,i-1])/data.iloc[:,i-1] #FP2
-        # dif = (data.iloc[:,i]-data.iloc[:,i-1])**2                #FP3 in works
+        dif = (data.iloc[:,i]-data.iloc[:,i-1])**2                #FP3 in works
         difFrame.insert(i-1,str(i),dif)
     
     # for i in range (1,22):
@@ -629,16 +643,17 @@ def mostOccuredIPFinder(file):
     return mostOccuredIp
 
 def testingWithFlowpic(filename):
-    print("filename is ",filename)
+    
     out_path = r"E:\8-ModelsIntegrationCode\FlowPics\\"
     #path_of_csv = r"E:\ads\models integration code\VPN.csv"
-
+    
+    
     path_to_file = filename
     ImgName = path_to_file.split("\\")[-1].split(".")[0]
     
     Allpackets=rdpcap(path_to_file)
     moIP = mostOccuredIPFinder(path_to_file)
-    print("image name is ",ImgName)
+    print(ImgName)
     
     packet_info = pd.DataFrame()
     packet_length = []
@@ -656,39 +671,59 @@ def testingWithFlowpic(filename):
     
     packet_info['Packet_Arrival'] = (packet_info['Packet_Arrival']-min(packet_info['Packet_Arrival']))/(max(packet_info['Packet_Arrival'])-min(packet_info['Packet_Arrival']))
     
-    packet_info['Packet_Arrival'] = packet_info['Packet_Arrival'] * 120
-    plt.ylim(ymax = 1500, ymin=0)
+    packet_info['Packet_Arrival'] = packet_info['Packet_Arrival'] * 120 
+    fig=plt.gcf()
+    pltt.close()
+    pltt.cla()
+    pltt.clf()
+    pltt.ioff()
+    #plt.figure(figsize=(6,4))
+    pltt.autoscale(False)
+    px = 1/pltt.rcParams['figure.dpi']  # pixel in inches
+    pltt.subplots(figsize=(3600*px, 2400*px))
+   
+    #pd.set_option("display.max_rows", None, "display.max_columns", None)
+    print(packet_info)
+    pltt.ylim(ymax = 1500, ymin=0)
     #plt.xlim(xmax = 1400, xmin=0)
-    plt.scatter(packet_info['Packet_Arrival'], packet_info['Packet_Length'], color= "black", marker= "s", s=30)
+    pltt.scatter(packet_info['Packet_Arrival'], packet_info['Packet_Length'], color= "black", marker= "s", s=30)
+    bottom, top = plt.ylim()
+    print(bottom, top)
     filename = out_path + ImgName +'.png'
     # filenameT = out_pathT+traffic_label+'_'+str(count)+'.png'
-    plt.savefig(filename,dpi=60)
+    
+    pltt.savefig(filename,dpi = 60)
+    # plt.savefig(filenameT,dpi=600)
+    
     print("saved image filename is ",filename)
     # plt.savefig(filenameT,dpi=600)
 
     #sending data for plot generation on front page
+    plt.title('Flow pic')
+    plt.ylabel('Packet size')
     fig=plt.gcf()
     buf = io.BytesIO()
     fig.savefig(buf,format='png')
     buf.seek(0)
     string = base64.b64encode(buf.read())
-    uri3 = urllib.parse.quote(string)
-
-
-    plt.clf()
+    uri10 = urllib.parse.quote(string)
     
-    model = load_model(r"E:\8-ModelsIntegrationCode\Code\FlowPicsModel\flowpics\saveModel\NonVpnAutoFlowPicModel.h5")
+    pltt.close()
+
+    model = load_model(r"E:\8-ModelsIntegrationCode\updatedModels\flowpicModel43Classes88PercentAccuracy.h5")
     # load and prepare the image
     img=load_image(filename)
     #predict images
     model.predict(img)
     linksList = ["link1","link2","link3","link31","link32","link33","link34","link35","link36","link38","link39","link40","link41","link85","link86","link87","link88","link89","link90","link91","link92","link93","link94","link95","link96","link111","link112","link113","link114","link115","link116","link117","link118","link119","link120","link121","link122","link123","link124","link125","link126","link128","link129"]
     predict_name = linksList[numpy.argmax(model.predict(img))]
-    return predict_name,uri3
+    print(predict_name)
+    return predict_name,uri10
     
 def load_image(filename):
     # load the image
-    img = load_img(filename, target_size=(360, 240))
+    img = load_img(filename)
+    print(img.size)
     # convert to array
     img = img_to_array(img)
     # reshape into a single sample with 3 channels
@@ -713,15 +748,16 @@ def remotePcTesting(request):
         #urlF = str(result)
         amount = 1
         #link100_url = urlF
-        link100_duration = 120
+        link100_duration = 10
         filename = harvest_video_remote(amount,filename,link100_duration)
         print(filename)
         i+=1
     ips=[]
     ipsSet =set((p[IP].src, p[IP].dst,p[IP].proto) for p in PcapReader(filename) if IP in p)
     mostOccuredIp=""
+    
     if(len(ipsSet)<=2):
-
+        
         for i in ipsSet:
             ipss=i
             break
@@ -758,6 +794,10 @@ def remotePcTesting(request):
                 BPS_list.append(0)
         BPS_list.append(linkNumberr)
         writer.writerow(BPS_list)
+
+    plt.cla()
+    plt.close()
+    plt.clf()
     #bytes per second 
   
     x = []
@@ -839,43 +879,7 @@ def remotePcTesting(request):
     BPS_list.clear()
     plt.close()
 
-    #model predication
-    #------------------- df  = list of BPS -----------------
-    BPS_list=[]
-    with open("E:\\ads\\toolV1.2\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
-        writer = csv.writer(csv_file)
-        fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
-        file = filename
-        temp=read_pcap(file, fields, timeseries=True, strict=True)
-        temp["frame.time_epoch"]=pd.to_datetime(temp["frame.time_epoch"],unit='s')
-        source_address=temp[temp["ip.dst"] == mostOccuredIp]
-        bytes_per_second=source_address.resample("s", on='frame.time_epoch').sum()
-        BPS_list=bytes_per_second['frame.len'][0:120]
-        BPS_list = list(map(_replaceitem, BPS_list))
-        lenBPS = len(BPS_list)
-        if lenBPS < 120:
-            print("len is less")
-            diff = 120- lenBPS
-            for d in range(diff):
-                BPS_list.append(0)
-        BPS_list.append(linkNumberr)
-        writer.writerow(BPS_list)
     
-    array = BPS_list[0:120]
-    
-    #BPS model
-    predict_name = BPSModel(array)
-
-    #detect BPS - Classes (VPN vs NonVPN)
-    predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
-
-    #BPS - Without Classes (VPN vs NonVPN)
-    predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
-    
-    #DF model 
-    predict_name_DF = testingWithFingerprint(array)
-    #flowpic
-    predict_name_FP,uriFP = testingWithFlowpic(filename)
     #packets per second 
     with open(r"E:\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
@@ -1034,6 +1038,46 @@ def remotePcTesting(request):
     plt.close()
     BPS_list.clear()
     
+    #model predication
+    #------------------- df  = list of BPS -----------------
+    BPS_list=[]
+    with open("E:\\ads\\toolV1.2\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+        writer = csv.writer(csv_file)
+        fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
+        file = filename
+        temp=read_pcap(file, fields, timeseries=True, strict=True)
+        temp["frame.time_epoch"]=pd.to_datetime(temp["frame.time_epoch"],unit='s')
+        source_address=temp[temp["ip.dst"] == mostOccuredIp]
+        bytes_per_second=source_address.resample("s", on='frame.time_epoch').sum()
+        BPS_list=bytes_per_second['frame.len'][0:120]
+        BPS_list = list(map(_replaceitem, BPS_list))
+        lenBPS = len(BPS_list)
+        if lenBPS < 120:
+            print("len is less")
+            diff = 120- lenBPS
+            for d in range(diff):
+                BPS_list.append(0)
+        BPS_list.append(linkNumberr)
+        writer.writerow(BPS_list)
+    
+    array = BPS_list[0:120]
+    plt.cla()
+    plt.close()
+    plt.clf()
+    #BPS model
+    predict_name = BPSModel(array)
+
+    #detect BPS - Classes (VPN vs NonVPN)
+    predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
+
+    #BPS - Without Classes (VPN vs NonVPN)
+    predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
+    
+    #DF model 
+    predict_name_DF = testingWithFingerprint(array)
+    print("predicted by df is ", predict_name_DF)
+    #flowpic
+    predict_name_FP,uriFP = testingWithFlowpic(filename)
 
     
     
@@ -1187,7 +1231,7 @@ def downloadVideoRemote(video_quality,video_name, duration_of_the_video):
     quality_path =  video_path +  funcInFile + "\\"
     if not os.path.exists(quality_path):
         os.makedirs(quality_path)
-    #folder = "C:\\Users\\user\\Desktop\\ranTests\\pcap\\" + video_name + "\\"+ video_quality
+    #folder = "C:\\Users\\user\\Desktop\\ranTests\\pcap\\" + video_name + "\\"+ video_quality #Local Area Connection* 12
     filename = quality_path + video_name + "_"  + funcInFile + t_time + ".pcap"
     tsharkOut  = open(filename, "wb")
     tsharkCall = ["C:\\Program Files\\Wireshark\\tshark.exe","-F", "pcap", "-f", "port 443", "-i", "Wi-Fi 2", "-w", filename]#8-fixed line 3 wifi in my pc
@@ -1291,9 +1335,9 @@ def upload(request):
                     BPS_list.append(0)
             BPS_list.append("PcapLocalDrive")
             writer.writerow(BPS_list)
+
     
-
-
+    plt.close()
     x = []
     y = []
     array = []
@@ -1374,48 +1418,7 @@ def upload(request):
     BPS_list.clear()
     plt.close()
 
-    #model predication
-    #------------------- df  = list of BPS -----------------
-    BPS_list=[]
-    with open("E:\\ads\\toolV1.2\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
-        writer = csv.writer(csv_file)
-           
-        
-        fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
-        
-        file = file_name
-        temp=read_pcap(file, fields, timeseries=True, strict=True)
-        temp["frame.time_epoch"]=pd.to_datetime(temp["frame.time_epoch"],unit='s')
-        source_address=temp[temp["ip.dst"] == mostOccuredIp]
-        bytes_per_second=source_address.resample("s", on='frame.time_epoch').sum()
-        BPS_list=bytes_per_second['frame.len'][0:120]
-        
-        BPS_list = list(map(_replaceitem, BPS_list))
-        lenBPS = len(BPS_list)
-        if lenBPS < 120:
-            print("len is less")
-            diff = 120- lenBPS
-            for d in range(diff):
-                BPS_list.append(0)
-        BPS_list.append("PcapFromLocalDrive")
-        writer.writerow(BPS_list)
     
-    array = BPS_list[0:120]
-
-    #BPS model
-    predict_name = BPSModel(array)
-
-    #detect BPS - Classes (VPN vs NonVPN)
-    predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
-
-    #BPS - Without Classes (VPN vs NonVPN)
-    predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
-    
-    #DF model 
-    predict_name_DF = testingWithFingerprint(array)
-    #flowpic
-    predict_name_FP,uriFP = testingWithFlowpic(file_name)
-
     #packets per second 
     with open(r"E:\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
@@ -1594,8 +1597,52 @@ def upload(request):
     BPS_list.clear()
     plt.close()
     BPS_list.clear()
+    #model predication
+    #------------------- df  = list of BPS -----------------
+    BPS_list=[]
+    with open("E:\\ads\\toolV1.2\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+        writer = csv.writer(csv_file)
+        
+        
+        fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
+        
+        file = file_name
+        temp=read_pcap(file, fields, timeseries=True, strict=True)
+        temp["frame.time_epoch"]=pd.to_datetime(temp["frame.time_epoch"],unit='s')
+        source_address=temp[temp["ip.dst"] == mostOccuredIp]
+        bytes_per_second=source_address.resample("s", on='frame.time_epoch').sum()
+        BPS_list=bytes_per_second['frame.len'][0:120]
+        
+        BPS_list = list(map(_replaceitem, BPS_list))
+        lenBPS = len(BPS_list)
+        if lenBPS < 120:
+            print("len is less")
+            diff = 120- lenBPS
+            for d in range(diff):
+                BPS_list.append(0)
+        BPS_list.append("PcapFromLocalDrive")
+        writer.writerow(BPS_list)
+    
+    array = BPS_list[0:120]
+
+    #BPS model
+    predict_name = BPSModel(array)
+
+    #detect BPS - Classes (VPN vs NonVPN)
+    predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
+
+    #BPS - Without Classes (VPN vs NonVPN)
+    predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
+    
+    #DF model 
+    predict_name_DF = testingWithFingerprint(array)
+    #flowpic
+    predict_name_FP,uriFP = testingWithFlowpic(file_name)
+    
 
 
+
+    
 
     
 
