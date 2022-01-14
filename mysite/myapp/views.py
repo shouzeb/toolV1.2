@@ -58,6 +58,7 @@ def webpage1(request):
    
     csvfile = "E:\\ads\\toolV1.2\\mysite\\csvOfLinks\\linksCsv.csv"
     data = pd.read_csv(csvfile)
+    
     style = '<style>.dataframe tr { text-align: left; }</style>'
     data_html = data.to_html(justify='left')
     context = {'loaded_data': data_html}
