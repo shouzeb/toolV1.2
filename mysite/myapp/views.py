@@ -758,7 +758,7 @@ def remotePcTesting(request):
         #urlF = str(result)
         amount = 1
         #link100_url = urlF
-        link100_duration = 10
+        link100_duration = 120
         filename = harvest_video_remote(amount,filename,link100_duration)
         print(filename)
         i+=1
@@ -1085,7 +1085,7 @@ def remotePcTesting(request):
     #detect BPS - Classes (VPN vs NonVPN)
     predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
     print("predicted by BPS with classes is ", predict_name_BPS_Classes)
-    predict_name_BPS_Classes = linksDict[predict_name_BPS_Classes]
+    
     #BPS - Without Classes (VPN vs NonVPN)
     predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
     print("predicted by BPS without classes is ", predict_name_BPS_Without_Classes)
@@ -1254,7 +1254,7 @@ def downloadVideoRemote(video_quality,video_name, duration_of_the_video):
     #folder = "C:\\Users\\user\\Desktop\\ranTests\\pcap\\" + video_name + "\\"+ video_quality #Local Area Connection* 12
     filename = quality_path + video_name + "_"  + funcInFile + t_time + ".pcap"
     tsharkOut  = open(filename, "wb")
-    tsharkCall = ["C:\\Program Files\\Wireshark\\tshark.exe","-F", "pcap", "-f", "port 443", "-i", "Wi-Fi 2", "-w", filename]#8-fixed line 3 wifi in my pc
+    tsharkCall = ["C:\\Program Files\\Wireshark\\tshark.exe","-F", "pcap", "-f", "port 443", "-i", "Local Area Connection* 12", "-w", filename]#8-fixed line 3 wifi in my pc
     tsharkProc = ""
     
    
