@@ -429,7 +429,6 @@ def BPSModel(array):
     df =  pd.DataFrame (array, columns = ['column_name'])
     df['column_name'] = df['column_name'].astype(int)
     #name = str(df[i,121:].values.tolist())
-
     x = df['column_name'] #
 
     v=int(model_path.split("_")[-1].split(".")[0])
