@@ -489,12 +489,12 @@ def BPSWithoutClassesVPNvsNonVPN(array):
 
 def testingWithFingerprint(BPS_list):
     #checking with BPS model        
-    model_path=r"E:\8-ModelsIntegrationCode\updatedModels\Differential_NonVPN_LIVE_FP3.h5"     
+    model_path=r"E:\ads\toolV1.2\mysite\models\DF BPS\DF_769000000000000.h5"   
     model = load_model(model_path)
     #l_temp=pd.read_pickle(r"E:\8-ModelsIntegrationCode\Code\DFModel\Train_FP1.pkl")
     import pickle5 as pickle
     data = ""
-    with open(r"E:\8-ModelsIntegrationCode\updatedModels\Train_FP1.pkl", "rb") as fh:
+    with open(r"E:\ads\toolV1.2\mysite\models\DF BPS\Train_FP1.pkl", "rb") as fh:
       data = pickle.load(fh)
     l_temp=(data)
     array = BPS_list[0:21]
@@ -743,7 +743,53 @@ def load_image(filename):
     img = img.astype('float32')
     img = img - [123.68, 116.779, 103.939]
     return img
+
+def generate_PAT(path_to_PCAP,dirName):
+   
+    out_path = r"E:\ads\toolV1.2\mysite\models\DF PAT\PAT-iteration.csv"
+    path_to_file = path_to_PCAP
+   
+    Allpackets=rdpcap(path_to_file)
+   # moIP = mostOccuredIPFinder(path_to_file)
+   
+    packet_info = pd.DataFrame()
+    packet_length = []
+    packet_time = []
     
+    for p in Allpackets:
+        # check = isValidSource(packet,moIP)
+        # if check:
+        packet=transform_packet(p)
+        if packet is not None:
+           packet_length.append(len(packet))
+           # print(p.time)
+           # print(len(packet))
+           # time.sleep(2)
+           packet_time.append(p.time)
+
+    packet_info = packet_info.append(pd.DataFrame({'Packet_Length':packet_length,'Packet_Arrival':packet_time})) 
+    
+    packet_info['Packet_Arrival'] = (packet_info['Packet_Arrival']-min(packet_info['Packet_Arrival']))/(max(packet_info['Packet_Arrival'])-min(packet_info['Packet_Arrival']))
+    #print( packet_info['Packet_Arrival'])
+    
+    packet_info['Packet_Arrival'] = packet_info['Packet_Arrival'] * 120
+    seconds = [i for i in range(120)]
+    sample_PAT = []
+    for i in seconds:
+        # df = packet_info.loc((packet_info['Packet_Arrival']>=i) & (packet_info['Packet_Arrival']<i+1) )
+        df_second = packet_info[  (packet_info['Packet_Arrival']>=i) & (packet_info['Packet_Arrival']<i+1) ]
+        aggr = df_second['Packet_Length'].sum()
+        sample_PAT.append(aggr)
+    
+    sample_PAT.append(str(dirName))
+    #sample_PAT.append(str(FileName))
+    with open (out_path,'a',newline="") as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(sample_PAT)
+    
+    return sample_PAT
+
+
 def remotePcTesting(request):
     #result = request.GET["cars"].split(",")[1]
     #linkNumberr = request.GET["cars"].split(",")[0]
