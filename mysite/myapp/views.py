@@ -421,11 +421,11 @@ def webpage2(request):
 def BPSModel(array):
 
     #BPS model
-    model_path=r"E:\8-ModelsIntegrationCode\updatedModels\bpsModel\NonVPN_04-01-2022-10-46_9830494.h5"       
+    model_path=r"E:\ads\toolV1.2\mysite\models\BPS model\NonVPN_04-01-2022-10-46_9830494.h5"       
     model = load_model(model_path)
     import pickle5 as pickle
     data = ""
-    with open(r"E:\8-ModelsIntegrationCode\updatedModels\bpsModel\NonVPN_04-01-2022-10-46_9830494.pkl", "rb") as fh:
+    with open(r"E:\ads\toolV1.2\mysite\models\BPS model\NonVPN_04-01-2022-10-46_9830494.pkl", "rb") as fh:
       data = pickle.load(fh)
     l_temp=(data)
     x = []
@@ -727,7 +727,7 @@ def testingWithFlowpic(filename):
     img=load_image(filename)
     #predict images
     model.predict(img)
-    linksList = ["link1","link2","link3","link31","link32","link33","link34","link35","link36","link38","link39","link40","link41","link85","link86","link87","link88","link89","link90","link91","link92","link93","link94","link95","link96","link111","link112","link113","link114","link115","link116","link117","link118","link119","link120","link121","link122","link123","link124","link125","link126","link128","link129"]
+    linksList = ["link1","link111","link112","link113","link114","link115","link116","link117","link118","link119","link120","link121","link122","link123","link124","link125","link126","link128","link129","link2","link3","link31","link32","link33","link34","link35","link36","link38","link39","link40","link41","link85","link86","link87","link88","link89","link90","link91","link92","link93","link94","link95","link96"]
     predict_name = linksList[numpy.argmax(model.predict(img))]
     print(predict_name)
     return predict_name,uri10
@@ -760,7 +760,7 @@ def remotePcTesting(request):
         #urlF = str(result)
         amount = 1
         #link100_url = urlF
-        link100_duration = 120
+        link100_duration = 10
         filename = harvest_video_remote(amount,filename,link100_duration)
         print(filename)
         i+=1
@@ -1256,7 +1256,7 @@ def downloadVideoRemote(video_quality,video_name, duration_of_the_video):
     #folder = "C:\\Users\\user\\Desktop\\ranTests\\pcap\\" + video_name + "\\"+ video_quality #Local Area Connection* 12
     filename = quality_path + video_name + "_"  + funcInFile + t_time + ".pcap"
     tsharkOut  = open(filename, "wb")
-    tsharkCall = ["C:\\Program Files\\Wireshark\\tshark.exe","-F", "pcap", "-f", "port 443", "-i", "Local Area Connection* 12", "-w", filename]#8-fixed line 3 wifi in my pc
+    tsharkCall = ["C:\\Program Files\\Wireshark\\tshark.exe","-F", "pcap", "-f", "port 443", "-i", "Wi-Fi 2", "-w", filename]#8-fixed line 3 wifi in my pc
     tsharkProc = ""
     
    
