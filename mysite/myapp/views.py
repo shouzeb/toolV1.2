@@ -10,7 +10,7 @@ from csv import DictWriter
 
 from numpy import string_
 import matplotlib
-
+import pickle5 as pickle
 matplotlib.use('Agg')
 
 import numpy as np
@@ -408,6 +408,12 @@ def webpage2(request):
     print("predicted by df is ", predict_name_DF)
     predict_name_DF = linksDict[predict_name_DF]
     
+    #PAT model
+    PATBpsList = generate_PAT(filename,linkNumberr)
+    predict_name_PAT = preditWithPATFingerprint(PATBpsList, linkNumberr)
+    print("predicted by PAT is ", predict_name_PAT)
+    predict_name_PAT = linksDict[predict_name_PAT]
+    
     #flowpic
     predict_name_FP,uriFP = testingWithFlowpic(filename)
     print("predicted by fp is ", predict_name_FP)
@@ -416,14 +422,14 @@ def webpage2(request):
     plt.cla()
     plt.clf()
 
-    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":selectedLinkNumberName,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP})
+    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":selectedLinkNumberName,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP,"PAT":predict_name_PAT})
 
 def BPSModel(array):
 
     #BPS model
     model_path=r"E:\ads\toolV1.2\mysite\models\BPS model\NonVPN_04-01-2022-10-46_9830494.h5"       
     model = load_model(model_path)
-    import pickle5 as pickle
+    
     data = ""
     with open(r"E:\ads\toolV1.2\mysite\models\BPS model\NonVPN_04-01-2022-10-46_9830494.pkl", "rb") as fh:
       data = pickle.load(fh)
@@ -789,6 +795,106 @@ def generate_PAT(path_to_PCAP,dirName):
     
     return sample_PAT
 
+def preditWithPATFingerprint(BPS_list,name):
+    # data to be written row-wise in csv fil
+    data = [BPS_list]
+      
+    # opening the csv file in 'w+' mode
+    file = open(r"E:\ads\toolV1.2\mysite\models\DF PAT\test_PAT test.csv", 'w', newline ='')
+      
+    # writing the data into the file
+    with file:    
+        write = csv.writer(file)
+        write.writerows(data) 
+    file.close()
+        
+    dataorig =  pd.read_csv(r"E:\ads\toolV1.2\mysite\models\DF PAT\test_PAT test.csv",header=None)
+    data = dataorig.copy()
+    data = data.iloc[:,:-1]
+    labels = dataorig.iloc[:,-1].values
+    # difFrame=pd.DataFrame()
+    
+    
+    periodDataFrame= pd.DataFrame()
+    periodMax = 5
+    dataThreshold = 5000
+    
+    # print("DATA ",data[][0]) # data [column][row]
+    # print("NO of rows",len(data.index))
+    # print("NO of COL",len(data.columns))
+    
+    
+    for i in range(len(data.index)):
+        timeP = 0
+        dataP = 0
+        bpP = []
+    
+        for j in range(len(data.columns)):
+            if j-timeP >= periodMax:
+                timeP=j
+                bpP.append(dataP)
+                dataP = 0
+            if data[j][i] < dataThreshold:
+                continue
+            dataP += data[j][i]
+        bpP = pd.Series(bpP)
+        periodDataFrame=periodDataFrame.append(bpP,ignore_index=True)
+        
+    data = periodDataFrame.copy()
+    data = data.iloc[:,:-1]
+    difFrame=pd.DataFrame()
+    
+    data.replace(0,1,inplace=True)
+    for i in range (1,len(data.columns)):
+        dif = abs((data.iloc[:,i]-data.iloc[:,i-1]))
+        #print(i)
+        #dif = (data.iloc[:,i]-data.iloc[:,i-1])                #FP1
+        # dif = (data.iloc[:,i]-data.iloc[:,i-1])/data.iloc[:,i-1] #FP2
+        #dif = (data.iloc[:,i]-data.iloc[:,i-1])**2                #FP3 in works
+        difFrame.insert(i-1,str(i),dif)
+    
+    # for i in range (1,22):
+    #     data.insert((2+(i-1)*2),str(i)+"-"+str(i-1),difFrame.iloc[:,i-1])
+    difFrame.insert(len(difFrame.columns), None, labels)
+    #difFrame.to_csv(r"E:\ads\toolV1.2\mysite\models\DF PAT\Fingerprint_PAT_"+currentdate+".csv",mode='a',encoding='utf-8',index=False,header=False)
+    
+    #print(difFrame.iloc[0])
+    return testingWithFingerprintPAT(difFrame.iloc[0],name)
+    
+
+def testingWithFingerprintPAT(PAT_list,video_name):
+    #checking with BPS model        
+    model_path=r"E:\ads\toolV1.2\mysite\models\DF PAT\ADF_PAT_35946156.h5"    
+    model = load_model(model_path)
+    with open(r"E:\ads\toolV1.2\mysite\models\BPS model\NonVPN_04-01-2022-10-46_9830494.pkl", "rb") as fh:
+      data = pickle.load(fh)
+    l_temp=(data)
+    array = PAT_list[0:21]
+# =============================================================================
+#     x = []
+#     df =  pd.DataFrame (array, columns = ['column_name'])
+#     df['column_name'] = df['column_name'].astype(int)
+#     #name = str(df[i,121:].values.tolist())
+#     x = df['column_name'] #
+# =============================================================================
+     
+    v= int(model_path.split("_")[-1].split(".")[0]) #change this
+    #v=int(model_path.split("_")[-1].split(".")[0])
+    
+    
+    
+    x1=np.vectorize(norm)(array,v)
+    
+    labels = np.asarray(l_temp, dtype = np.int8)
+    x3 = x1.reshape(1,21,1)
+    y_pred1 = model.predict(x3)
+    
+    l_temp.loc[-1]=y_pred1[0]
+    
+    predict_name = l_temp.loc[-1].idxmax()
+    print("Video name was ",video_name,". The predicted link is with PAT is : ",predict_name)
+    
+    return predict_name
 
 def remotePcTesting(request):
     #result = request.GET["cars"].split(",")[1]
