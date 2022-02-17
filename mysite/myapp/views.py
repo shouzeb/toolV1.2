@@ -389,31 +389,47 @@ def webpage2(request):
     #dict of links
     linksDict = {"link1":"Learn Object Oriented Programming in 10 minutes (Java)","link111":"Arslan Ash vs Knee - EVO 2019 Grand Finals - Tekken 7","link112":"How To Make Marble Cake At Home in Urdu I Marble Cake Recipe I No Oven Cake Recipe I Marble Tea Cake","link113":"Mozzarella Cheese Recipe By ijaz Ansari | How To Make Mozzarella Cheese At Home | No Rennet |","link114":"Extra Crispy Fried Chicken Recipe By Food Fusion (Ramzan Special)","link115":"10 Most Expensive Things Dwayne The Rock Johnson Owns - MET Ep 14","link116":"Shahid Afridi Home Tour | Exclusive Video","link117":"Ek Sharabi Jo Sharab Se Roza Iftar Krta Tha | Latest Ramadan Bayan by Maulana Tariq Jameel 2017","link118":"Daniel Bryan & Roman Reigns vs. Seth Rollins Big Show Kane & J&J Security: Raw February 9 2015","link119":"Spintop Snipers | Amazing Top Trick Shots!","link120":"Random Acts of Kindness - Faith In Humanity Restored #3","link121":"Sony - World's First Smartphone To Do This","link122":"AVENGERS ENDGAME Becoming Fat Thor Behind the Scenes Bonus Clip (2019) Chris Hemsworth Move HD","link123":"ScaleTrains BNSF HO Scale Dash 9 C44-9W Unboxing","link124":"Xiaomi Mi Mix Alpha Impressions: The Wraparound Display!","link125":"Shan-e-Iftar - Shan E Dastarkhwan [Chicken Parmesan] - 23rd April 2021 - Chef Farah","link126":"Latest Trouser Design 2021 | Capri Design 2021 | Plazo Pant Design","link128":"VW Amarok Tackling Gunshot Creek Sept 2015","link129":"Eau De Bean | Mr Bean Cartoon Season 3 | NEW FULL EPISODE | Season 3 Episode 12 | Mr Bean Official","link2":"Why You Shouldn’t Learn Python In 2021","link3":"10 LATEST TECHNOLOGY INVENTIONS ▶ Smart Vehicle You Must See","link31":"Can My Water Cooled Raspberry Pi Cluster Beat My MacBook?","link32":"LIFE IN RAMZAN! | COMEDY VIDEO","link33":"Russell Shakib & Malan Join in | Zero Tolerance required for PSL Protocols","link34":"TensorFlow.js Quick Start","link35":"you need to learn Virtual Machines RIGHT NOW!! (Kali Linux VM Ubuntu Windows)","link36":"Coding Interview | Software Engineer @ Bloomberg (Part 1)","link38":"Amazing Brathwaite 100! | West Indies v New Zealand - Match Highlights | ICC Cricket World Cup 2019","link39":"Ferocious Dinosaur Moments | Top 5 | BBC Earth","link40":"10 Latest NEW TECH GADGETS AND INVENTIONS 2020 | Available On Amazon | You Can Buy in ONLINE STORE","link41":"Ranking push of my team's OP Play video | Many Hackers | PUBG MOBILE","link85":"AIRPLANE Bean | Bean Movie | Funny Clips | Mr Bean Official","link86":"Mini LED cube with 54 pixel WiFi & gyroscope | SMT hotplate soldering | Pikocube v2.0","link87":"ASMR Video | Build Modern Glass Elevator For Underground And Rooftop Infinity Swimming Pool","link88":"NEW BEST LANDING IN MILITARY BASE","link89":"Random Facts Around The World | Part 57 | Urdu / Hindi","link90":"How THANOS Knew TONY In Avengers: Infinity War? | Super Questions Ep. 5 | Super Access","link91":"Data Center NETWORKS (what do they look like??) // FREE CCNA // EP 7","link92":"New Ghar Saman Shift Karna Shuru Kar diya","link93":"2v4 CLUTCH FOR THE WWCD • PMPL FINALS • 2 MAN CHICKEN DINNER •","link94":"MAKING A SNEAKER ROOM IN MY NEW HOUSE!","link95":"5 Richest Kids Of Pakistan | TOP X TV","link96":"Levels of Ultra Instinct (1% - 50% - 100%)"}
     
+    # ensemble list
+    ensembleList = []
+
     #link name for selected link number
     selectedLinkNumberName = linksDict[linkNumberr.lower().replace(" ", "")]
     
     #BPS model
     predict_name = BPSModel(array)
+    ensembleList.append(predict_name)
     print("predicted by BPS is ", predict_name)
     predict_name = linksDict[predict_name]
+
     #detect BPS - Classes (VPN vs NonVPN)
-    predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
-    print("predicted by BPS with classes is ", predict_name_BPS_Classes)
-    predict_name_BPS_Classes = linksDict[predict_name_BPS_Classes]
+    #predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
+    #print("predicted by BPS with classes is ", predict_name_BPS_Classes)
+    #predict_name_BPS_Classes = linksDict[predict_name_BPS_Classes]
+
     #BPS - Without Classes (VPN vs NonVPN)
     predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
     print("predicted by BPS without classes is ", predict_name_BPS_Without_Classes)
+    
     #DF model 
     predict_name_DF = testingWithFingerprint(array)
+    ensembleList.append(predict_name_DF)
     print("predicted by df is ", predict_name_DF)
     predict_name_DF = linksDict[predict_name_DF]
     
     #PAT model
     PATBpsList = generate_PAT(filename,linkNumberr)
     predict_name_PAT = preditWithPATFingerprint(PATBpsList, linkNumberr)
+    ensembleList.append(predict_name_PAT)
     print("predicted by PAT is ", predict_name_PAT)
     predict_name_PAT = linksDict[predict_name_PAT]
     
+    #ensemble
+    predict_name_ensemble = ensemble(ensembleList)
+    print(ensembleList)
+    print("predicted by ensemble is ", predict_name_ensemble)
+    if predict_name_ensemble != "Ensemble failed":
+        predict_name_ensemble = linksDict[predict_name_ensemble]
+
     #flowpic
     predict_name_FP,uriFP = testingWithFlowpic(filename)
     print("predicted by fp is ", predict_name_FP)
@@ -422,16 +438,16 @@ def webpage2(request):
     plt.cla()
     plt.clf()
 
-    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":selectedLinkNumberName,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP,"PAT":predict_name_PAT})
+    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":selectedLinkNumberName,"predictedName":predict_name,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP,"PAT":predict_name_PAT,"ensemble":predict_name_ensemble})
 
 def BPSModel(array):
 
     #BPS model
-    model_path=r"E:\ads\toolV1.2\mysite\models\BPS model\NonVPN_04-01-2022-10-46_9830494.h5"       
+    model_path=r"E:\ads\models\BPS model\NonVPN_04-01-2022-10-46_9830494.h5"       
     model = load_model(model_path)
     
     data = ""
-    with open(r"E:\ads\toolV1.2\mysite\models\BPS model\NonVPN_04-01-2022-10-46_9830494.pkl", "rb") as fh:
+    with open(r"E:\ads\models\BPS model\NonVPN_04-01-2022-10-46_9830494.pkl", "rb") as fh:
       data = pickle.load(fh)
     l_temp=(data)
     x = []
@@ -495,12 +511,12 @@ def BPSWithoutClassesVPNvsNonVPN(array):
 
 def testingWithFingerprint(BPS_list):
     #checking with BPS model        
-    model_path=r"E:\ads\toolV1.2\mysite\models\DF BPS\DF_769000000000000.h5"   
+    model_path=r"E:\ads\models\DF BPS\DF_769000000000000.h5"   
     model = load_model(model_path)
     #l_temp=pd.read_pickle(r"E:\8-ModelsIntegrationCode\Code\DFModel\Train_FP1.pkl")
     import pickle5 as pickle
     data = ""
-    with open(r"E:\ads\toolV1.2\mysite\models\DF BPS\Train_FP1.pkl", "rb") as fh:
+    with open(r"E:\ads\models\DF BPS\Train_FP1.pkl", "rb") as fh:
       data = pickle.load(fh)
     l_temp=(data)
     array = BPS_list[0:21]
@@ -728,7 +744,7 @@ def testingWithFlowpic(filename):
     
     pltt.close()
 
-    model = load_model(r"E:\8-ModelsIntegrationCode\updatedModels\flowpicModel43Classes88PercentAccuracy.h5")
+    model = load_model(r"E:\ads\models\Flowpic\TrafficPatternPlotAutoModel.h5")
     # load and prepare the image
     img=load_image(filename)
     #predict images
@@ -752,7 +768,7 @@ def load_image(filename):
 
 def generate_PAT(path_to_PCAP,dirName):
    
-    out_path = r"E:\ads\toolV1.2\mysite\models\DF PAT\PAT-iteration.csv"
+    out_path = r"E:\ads\models\DF PAT\PAT-iteration.csv"
     path_to_file = path_to_PCAP
    
     Allpackets=rdpcap(path_to_file)
@@ -800,7 +816,7 @@ def preditWithPATFingerprint(BPS_list,name):
     data = [BPS_list]
       
     # opening the csv file in 'w+' mode
-    file = open(r"E:\ads\toolV1.2\mysite\models\DF PAT\test_PAT test.csv", 'w', newline ='')
+    file = open(r"E:\ads\models\DF PAT\test_PAT test.csv", 'w', newline ='')
       
     # writing the data into the file
     with file:    
@@ -808,7 +824,7 @@ def preditWithPATFingerprint(BPS_list,name):
         write.writerows(data) 
     file.close()
         
-    dataorig =  pd.read_csv(r"E:\ads\toolV1.2\mysite\models\DF PAT\test_PAT test.csv",header=None)
+    dataorig =  pd.read_csv(r"E:\ads\models\DF PAT\test_PAT test.csv",header=None)
     data = dataorig.copy()
     data = data.iloc[:,:-1]
     labels = dataorig.iloc[:,-1].values
@@ -856,7 +872,7 @@ def preditWithPATFingerprint(BPS_list,name):
     # for i in range (1,22):
     #     data.insert((2+(i-1)*2),str(i)+"-"+str(i-1),difFrame.iloc[:,i-1])
     difFrame.insert(len(difFrame.columns), None, labels)
-    #difFrame.to_csv(r"E:\ads\toolV1.2\mysite\models\DF PAT\Fingerprint_PAT_"+currentdate+".csv",mode='a',encoding='utf-8',index=False,header=False)
+    #difFrame.to_csv(r"E:\ads\models\DF PAT\Fingerprint_PAT_"+currentdate+".csv",mode='a',encoding='utf-8',index=False,header=False)
     
     #print(difFrame.iloc[0])
     return testingWithFingerprintPAT(difFrame.iloc[0],name)
@@ -864,9 +880,9 @@ def preditWithPATFingerprint(BPS_list,name):
 
 def testingWithFingerprintPAT(PAT_list,video_name):
     #checking with BPS model        
-    model_path=r"E:\ads\toolV1.2\mysite\models\DF PAT\ADF_PAT_35946156.h5"    
+    model_path=r"E:\ads\models\DF PAT\ADF_PAT_35946156.h5"    
     model = load_model(model_path)
-    with open(r"E:\ads\toolV1.2\mysite\models\BPS model\NonVPN_04-01-2022-10-46_9830494.pkl", "rb") as fh:
+    with open(r"E:\ads\models\BPS model\NonVPN_04-01-2022-10-46_9830494.pkl", "rb") as fh:
       data = pickle.load(fh)
     l_temp=(data)
     array = PAT_list[0:21]
@@ -1232,30 +1248,50 @@ def remotePcTesting(request):
     #dict of links
     linksDict = {"link1":"Learn Object Oriented Programming in 10 minutes (Java)","link111":"Arslan Ash vs Knee - EVO 2019 Grand Finals - Tekken 7","link112":"How To Make Marble Cake At Home in Urdu I Marble Cake Recipe I No Oven Cake Recipe I Marble Tea Cake","link113":"Mozzarella Cheese Recipe By ijaz Ansari | How To Make Mozzarella Cheese At Home | No Rennet |","link114":"Extra Crispy Fried Chicken Recipe By Food Fusion (Ramzan Special)","link115":"10 Most Expensive Things Dwayne The Rock Johnson Owns - MET Ep 14","link116":"Shahid Afridi Home Tour | Exclusive Video","link117":"Ek Sharabi Jo Sharab Se Roza Iftar Krta Tha | Latest Ramadan Bayan by Maulana Tariq Jameel 2017","link118":"Daniel Bryan & Roman Reigns vs. Seth Rollins Big Show Kane & J&J Security: Raw February 9 2015","link119":"Spintop Snipers | Amazing Top Trick Shots!","link120":"Random Acts of Kindness - Faith In Humanity Restored #3","link121":"Sony - World's First Smartphone To Do This","link122":"AVENGERS ENDGAME Becoming Fat Thor Behind the Scenes Bonus Clip (2019) Chris Hemsworth Move HD","link123":"ScaleTrains BNSF HO Scale Dash 9 C44-9W Unboxing","link124":"Xiaomi Mi Mix Alpha Impressions: The Wraparound Display!","link125":"Shan-e-Iftar - Shan E Dastarkhwan [Chicken Parmesan] - 23rd April 2021 - Chef Farah","link126":"Latest Trouser Design 2021 | Capri Design 2021 | Plazo Pant Design","link128":"VW Amarok Tackling Gunshot Creek Sept 2015","link129":"Eau De Bean | Mr Bean Cartoon Season 3 | NEW FULL EPISODE | Season 3 Episode 12 | Mr Bean Official","link2":"Why You Shouldn’t Learn Python In 2021","link3":"10 LATEST TECHNOLOGY INVENTIONS ▶ Smart Vehicle You Must See","link31":"Can My Water Cooled Raspberry Pi Cluster Beat My MacBook?","link32":"LIFE IN RAMZAN! | COMEDY VIDEO","link33":"Russell Shakib & Malan Join in | Zero Tolerance required for PSL Protocols","link34":"TensorFlow.js Quick Start","link35":"you need to learn Virtual Machines RIGHT NOW!! (Kali Linux VM Ubuntu Windows)","link36":"Coding Interview | Software Engineer @ Bloomberg (Part 1)","link38":"Amazing Brathwaite 100! | West Indies v New Zealand - Match Highlights | ICC Cricket World Cup 2019","link39":"Ferocious Dinosaur Moments | Top 5 | BBC Earth","link40":"10 Latest NEW TECH GADGETS AND INVENTIONS 2020 | Available On Amazon | You Can Buy in ONLINE STORE","link41":"Ranking push of my team's OP Play video | Many Hackers | PUBG MOBILE","link85":"AIRPLANE Bean | Bean Movie | Funny Clips | Mr Bean Official","link86":"Mini LED cube with 54 pixel WiFi & gyroscope | SMT hotplate soldering | Pikocube v2.0","link87":"ASMR Video | Build Modern Glass Elevator For Underground And Rooftop Infinity Swimming Pool","link88":"NEW BEST LANDING IN MILITARY BASE","link89":"Random Facts Around The World | Part 57 | Urdu / Hindi","link90":"How THANOS Knew TONY In Avengers: Infinity War? | Super Questions Ep. 5 | Super Access","link91":"Data Center NETWORKS (what do they look like??) // FREE CCNA // EP 7","link92":"New Ghar Saman Shift Karna Shuru Kar diya","link93":"2v4 CLUTCH FOR THE WWCD • PMPL FINALS • 2 MAN CHICKEN DINNER •","link94":"MAKING A SNEAKER ROOM IN MY NEW HOUSE!","link95":"5 Richest Kids Of Pakistan | TOP X TV","link96":"Levels of Ultra Instinct (1% - 50% - 100%)"}
 
+    # ensemble list
+    ensembleList = []
+
     #BPS model
     predict_name = BPSModel(array)
+    ensembleList.append(predict_name)
     print("predicted by BPS is ", predict_name)
     predict_name = linksDict[predict_name]
+
     #detect BPS - Classes (VPN vs NonVPN)
-    predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
-    print("predicted by BPS with classes is ", predict_name_BPS_Classes)
+    #predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
+    #print("predicted by BPS with classes is ", predict_name_BPS_Classes)
     
     #BPS - Without Classes (VPN vs NonVPN)
     predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
     print("predicted by BPS without classes is ", predict_name_BPS_Without_Classes)
+    
     #DF model 
     predict_name_DF = testingWithFingerprint(array)
+    ensembleList.append(predict_name_DF)
     print("predicted by df is ", predict_name_DF)
     predict_name_DF = linksDict[predict_name_DF]
     
+    #PAT model
+    PATBpsList = generate_PAT(filename,linkNumberr)
+    predict_name_PAT = preditWithPATFingerprint(PATBpsList, linkNumberr)
+    ensembleList.append(predict_name_PAT)
+    print("predicted by PAT is ", predict_name_PAT)
+    predict_name_PAT = linksDict[predict_name_PAT]
+
     #flowpic
     predict_name_FP,uriFP = testingWithFlowpic(filename)
     print("predicted by fp is ", predict_name_FP)
     predict_name_FP = linksDict[predict_name_FP]
 
+    #ensemble
+    predict_name_ensemble = ensemble(ensembleList)
+    print(ensembleList)
+    print("predicted by ensemble is ", predict_name_ensemble)
+    if predict_name_ensemble != "Ensemble failed":
+        predict_name_ensemble = linksDict[predict_name_ensemble]
     
     
-    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":linkNumberr,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP})
+    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":linkNumberr,"predictedName":predict_name,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP,"PAT":predict_name_PAT,"ensemble":predict_name_ensemble})
 
 def clickOnAd(driver):
     try:
@@ -1460,6 +1496,20 @@ def _replaceitem(x):
     else:
         return x
 
+#ensemble 
+def ensemble(List):
+    counter = 0
+    num = List[0]
+    for i in List:
+        curr_frequency = List.count(i)
+        if(curr_frequency> counter):
+            counter = curr_frequency
+            num = i
+    print(counter)
+    if counter >= 2:
+        return num 
+    else:
+        return "Ensemble failed"
 
 from django.shortcuts import render, HttpResponse
 
@@ -1802,33 +1852,54 @@ def upload(request):
     #dict of links
     linksDict = {"link1":"Learn Object Oriented Programming in 10 minutes (Java)","link111":"Arslan Ash vs Knee - EVO 2019 Grand Finals - Tekken 7","link112":"How To Make Marble Cake At Home in Urdu I Marble Cake Recipe I No Oven Cake Recipe I Marble Tea Cake","link113":"Mozzarella Cheese Recipe By ijaz Ansari | How To Make Mozzarella Cheese At Home | No Rennet |","link114":"Extra Crispy Fried Chicken Recipe By Food Fusion (Ramzan Special)","link115":"10 Most Expensive Things Dwayne The Rock Johnson Owns - MET Ep 14","link116":"Shahid Afridi Home Tour | Exclusive Video","link117":"Ek Sharabi Jo Sharab Se Roza Iftar Krta Tha | Latest Ramadan Bayan by Maulana Tariq Jameel 2017","link118":"Daniel Bryan & Roman Reigns vs. Seth Rollins Big Show Kane & J&J Security: Raw February 9 2015","link119":"Spintop Snipers | Amazing Top Trick Shots!","link120":"Random Acts of Kindness - Faith In Humanity Restored #3","link121":"Sony - World's First Smartphone To Do This","link122":"AVENGERS ENDGAME Becoming Fat Thor Behind the Scenes Bonus Clip (2019) Chris Hemsworth Move HD","link123":"ScaleTrains BNSF HO Scale Dash 9 C44-9W Unboxing","link124":"Xiaomi Mi Mix Alpha Impressions: The Wraparound Display!","link125":"Shan-e-Iftar - Shan E Dastarkhwan [Chicken Parmesan] - 23rd April 2021 - Chef Farah","link126":"Latest Trouser Design 2021 | Capri Design 2021 | Plazo Pant Design","link128":"VW Amarok Tackling Gunshot Creek Sept 2015","link129":"Eau De Bean | Mr Bean Cartoon Season 3 | NEW FULL EPISODE | Season 3 Episode 12 | Mr Bean Official","link2":"Why You Shouldn’t Learn Python In 2021","link3":"10 LATEST TECHNOLOGY INVENTIONS ▶ Smart Vehicle You Must See","link31":"Can My Water Cooled Raspberry Pi Cluster Beat My MacBook?","link32":"LIFE IN RAMZAN! | COMEDY VIDEO","link33":"Russell Shakib & Malan Join in | Zero Tolerance required for PSL Protocols","link34":"TensorFlow.js Quick Start","link35":"you need to learn Virtual Machines RIGHT NOW!! (Kali Linux VM Ubuntu Windows)","link36":"Coding Interview | Software Engineer @ Bloomberg (Part 1)","link38":"Amazing Brathwaite 100! | West Indies v New Zealand - Match Highlights | ICC Cricket World Cup 2019","link39":"Ferocious Dinosaur Moments | Top 5 | BBC Earth","link40":"10 Latest NEW TECH GADGETS AND INVENTIONS 2020 | Available On Amazon | You Can Buy in ONLINE STORE","link41":"Ranking push of my team's OP Play video | Many Hackers | PUBG MOBILE","link85":"AIRPLANE Bean | Bean Movie | Funny Clips | Mr Bean Official","link86":"Mini LED cube with 54 pixel WiFi & gyroscope | SMT hotplate soldering | Pikocube v2.0","link87":"ASMR Video | Build Modern Glass Elevator For Underground And Rooftop Infinity Swimming Pool","link88":"NEW BEST LANDING IN MILITARY BASE","link89":"Random Facts Around The World | Part 57 | Urdu / Hindi","link90":"How THANOS Knew TONY In Avengers: Infinity War? | Super Questions Ep. 5 | Super Access","link91":"Data Center NETWORKS (what do they look like??) // FREE CCNA // EP 7","link92":"New Ghar Saman Shift Karna Shuru Kar diya","link93":"2v4 CLUTCH FOR THE WWCD • PMPL FINALS • 2 MAN CHICKEN DINNER •","link94":"MAKING A SNEAKER ROOM IN MY NEW HOUSE!","link95":"5 Richest Kids Of Pakistan | TOP X TV","link96":"Levels of Ultra Instinct (1% - 50% - 100%)"}
 
+    # ensemble list
+    ensembleList = []
+
     #BPS model
     predict_name = BPSModel(array)
+    ensembleList.append(predict_name)
     print("predicted by BPS is ", predict_name)
     predict_name = linksDict[predict_name]
+
     #detect BPS - Classes (VPN vs NonVPN)
-    predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
-    print("predicted by BPS with classes is ", predict_name_BPS_Classes)
-    predict_name_BPS_Classes = linksDict[predict_name_BPS_Classes]
+    #predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
+    #print("predicted by BPS with classes is ", predict_name_BPS_Classes)
+    #predict_name_BPS_Classes = linksDict[predict_name_BPS_Classes]
+    
     #BPS - Without Classes (VPN vs NonVPN)
     predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
     print("predicted by BPS without classes is ", predict_name_BPS_Without_Classes)
+    
     #DF model 
     predict_name_DF = testingWithFingerprint(array)
+    ensembleList.append(predict_name_DF)
     print("predicted by df is ", predict_name_DF)
     predict_name_DF = linksDict[predict_name_DF]
     
+    #PAT model
+    linkNumberr = "Local Storage"
+    PATBpsList = generate_PAT(file_name,linkNumberr)
+    predict_name_PAT = preditWithPATFingerprint(PATBpsList, linkNumberr)
+    ensembleList.append(predict_name_PAT)
+    print("predicted by PAT is ", predict_name_PAT)
+    predict_name_PAT = linksDict[predict_name_PAT]
+    
+
     #flowpic
     predict_name_FP,uriFP = testingWithFlowpic(file_name)
     print("predicted by fp is ", predict_name_FP)
     predict_name_FP = linksDict[predict_name_FP]
     
-
-
+    #ensemble
+    predict_name_ensemble = ensemble(ensembleList)
+    print(ensembleList)
+    print("predicted by ensemble is ", predict_name_ensemble)
+    if predict_name_ensemble != "Ensemble failed":
+        predict_name_ensemble = linksDict[predict_name_ensemble]
 
     
 
     
 
 
-    return render(request ,"index.html",{"something":True,"sum":file_name,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"predictedName":predict_name,"bpsClasses":predict_name_BPS_Classes,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP})
+    return render(request ,"index.html",{"something":True,"sum":file_name,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"predictedName":predict_name,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP,"PAT":predict_name_PAT,"ensemble":predict_name_ensemble})
