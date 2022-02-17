@@ -12,6 +12,7 @@ urlpatterns = [
     path('page2',views.webpage2,name='webpage2'),
     path('upload',views.upload,name="upload"),
     path('remotePcTesting',views.remotePcTesting,name="remotePcTesting")
+    
    
     
 ] +static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)

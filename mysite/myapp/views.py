@@ -748,7 +748,7 @@ def testingWithFlowpic(filename):
     # load and prepare the image
     img=load_image(filename)
     #predict images
-    model.predict(img)
+    
     linksList = ["link1","link111","link112","link113","link114","link115","link116","link117","link118","link119","link120","link121","link122","link123","link124","link125","link126","link128","link129","link2","link3","link31","link32","link33","link34","link35","link36","link38","link39","link40","link41","link85","link86","link87","link88","link89","link90","link91","link92","link93","link94","link95","link96"]
     predict_name = linksList[numpy.argmax(model.predict(img))]
     print(predict_name)
@@ -1511,10 +1511,12 @@ def ensemble(List):
     else:
         return "Ensemble failed"
 
+
 from django.shortcuts import render, HttpResponse
 
 
 def upload(request):
+
     if request.method == "POST":
         file_name = request.FILES["myFile"].file.name
         #extract ip from pcap
