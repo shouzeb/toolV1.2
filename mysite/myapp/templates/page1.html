@@ -1,7 +1,44 @@
 <!DOCTYPE html>
 <html>
-<body>
+  <head>
 
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+  </head>
+  <style>
+  
+    #pageloader  
+    {  
+      background: rgba( 255, 255, 255, 0.8 );  
+      display: none;  
+      height: 100%;  
+      position: fixed;  
+      width: 100%;  
+      z-index: 9999;  
+    }  
+      
+    #pageloader img  
+    {  
+      left: 50%;  
+      margin-left: -32px;  
+      margin-top: -32px;  
+      position: absolute;  
+      top: 50%;  
+    }  
+    
+      </style>
+
+  <script>
+    $(document).ready(function(){
+      $("form").on("submit", function(){
+        $("#pageloader").fadeIn();
+      });//submit
+    });//document ready
+    </script>
+    <body>
+      <div id="pageloader">
+        <img src="http://cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.16.1/images/loader-large.gif" alt="processing..." />
+      </div>
 <h1> </h1>
 
 <p>Please select a link from dropdown to generate its graphs: </p>
@@ -56,13 +93,42 @@
 
   </select>
 
-  <input type="submit" value="Generate Graphs">
+  <input id="fname" type="submit" value="Generate Graphs">
+  <div id="countdown" style="font-size: x-large; font-weight: bold; color: rgb(251, 255, 0); font-family: 'Source Serif Pro', serif;"
+class="position-absolute bottom-100 start-50 translate-middle-x h5"></div>
+
+<script>
+
+  document.getElementById("fname1").addEventListener("click", function () {
+     document.getElementById("countdown").innerHTML = "Video about to Start..."
+     setTimeout(function () {
+         var time = 10;
+         console.log(time)
+         var timeleft = time;
+         var downloadTimer = setInterval(function function1() {
+             document.getElementById("countdown").innerHTML = timeleft +
+                 "&nbsp" + "seconds remaining";
+  
+             timeleft -= 1;
+             if (timeleft <= 0) {
+                 clearInterval(downloadTimer);
+                 document.getElementById("countdown").innerHTML = "Kindly wait for the output..."
+             }
+         }, 1000);
+         console.log(countdown);
+     }, 3500);
+  });
+  
+  </script>
 </form>
+
+
 <p>Choose a file pcap file from local drive to generate its graphs: </p>
-<form  method= "POST" action ="{% url 'upload'%}" enctype = "multipart/form-data">
+<form  id="localDriveForm" method= "POST" action ="{% url 'upload'%}" enctype = "multipart/form-data">
 {% csrf_token %}
 <input type = "file" name = "myFile" accept=".pcap">
 <input type = "submit" name = "submit" size="50%" value="Generate Graphs">
+
 </form>
 <br>
 <br>
@@ -81,5 +147,6 @@
 <table id="table" class="display" style="width: 100%;  text-align: left;">
   {{loaded_data | safe}}
 </table>
+
 </body>
 </html>
