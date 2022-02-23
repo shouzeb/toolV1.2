@@ -25,42 +25,118 @@
 
 <p>The selected link is : <br>{{linkNumber}}</p>
 <p>The URL of selected link is : <br>{{cars}}</p>
-<p>Mean value is: <b>{{mean}}</b></p>
-<p>Standard Deviation  value is: <b>{{std}}</b></p>
-<p>First quartile  value is: <b>{{qur1}}</b></p>
-<p>Median value is: <b>{{median}}</b></p>
-<p>Third quartile  value is: <b>{{qur2}}</b></p>
+
+
+<table id="table1" style="width: 100%;  text-align: left;">
+  <tr>
+      <th>Measure</th>
+      <th>Value
+      </th>
+  </tr>
+  
+<tr>
+<td>Mean value</td>
+  <td>{{mean}}</td>
+</tr>
+<tr>
+<td>Standard Deviation value </td>
+<td>{{ std }}</td>
+</tr>
+<tr>
+  <td>First quartile value </td>
+  <td>{{ qur1 }}</td>
+  </tr>
+  <tr>
+    <td>Median value</td>
+    <td>{{ median }}</td>
+    </tr>
+    <tr>
+      <td>Third quartile value</td>
+      <td>{{ qur2 }}</td>
+      </tr>
+
+
+
+</table>
+
+
 <p>Original Link : <b>{{linkNumber}}</b></p>
 <table id="table" style="width: 100%;  text-align: left;">
     <tr>
-        <td>Model</td>
-        <td>Prediction</td>
+      <th>Model</th>
+      <th>Prediction</th>
+      <th>Probability</th>
     </tr>
     <tr>
-        <td>BPS model </td>
-        <td>{{ predictedName }}</td>
+        <td rowspan="3">BPS model </td>
+        <td>{{ predicted_Name_BPS_FPN }}%</td>
+        <td>{{ predicted_Name_BPS_FPP }}%</td>
     </tr>
     <tr>
-      <td>Differential fingerprinting  BPS</td>
-      <td>{{ DF }}</td>
+
+      <td>{{ predicted_Name_BPS_SPN }}%</td>
+      <td>{{ predicted_Name_BPS_SPP }}%</td>
   </tr>
   <tr>
-    <td>Differential fingerprinting  PAT</td>
-    <td>{{ PAT }}</td>
+
+    <td>{{ predicted_Name_BPS_TPN }}%</td>
+    <td>{{ predicted_Name_BPS_TPP }}%</td>
 </tr>
-  <tr>
-    <td>Flowpic  </td>
-    <td>{{ FP }}</td>
+
+<tr>
+  <td rowspan="3">Differential fingerprinting  BPS </td>
+  <td>{{ predicted_Name_DF_FPN }}%</td>
+  <td>{{ predicted_Name_DF_FPP }}%</td>
 </tr>
+<tr>
+
+<td>{{ predicted_Name_DF_SPN }}%</td>
+<td>{{ predicted_Name_DF_SPP }}%</td>
+</tr>
+<tr>
+
+<td>{{ predicted_Name_DF_TPN }}%</td>
+<td>{{ predicted_Name_DF_TPP }}%</td>
+</tr>
+
+<tr>
+  <td rowspan="3">Differential fingerprinting  PAT</td>
+  <td>{{ predicted_Name_PAT_FPN }}%</td>
+  <td>{{ predicted_Name_PAT_FPP }}%</td>
+</tr>
+<tr>
+
+<td>{{ predicted_Name_PAT_SPN }}%</td>
+<td>{{ predicted_Name_PAT_SPP }}%</td>
+</tr>
+<tr>
+
+<td>{{ predicted_Name_PAT_TPN }}%</td>
+<td>{{ predicted_Name_PAT_TPP }}%</td>
+</tr>
+
+
    
     <tr>
-        <td>BPS - Without Classes (VPN vs NonVPN) </td>
-        <td>{{ bpsWithoutClasses }}</td>
+        <td rowspan="2">BPS - Without Classes (VPN vs NonVPN) </td>
+        <td>{{ FPN_VpnVsNonvp }}%</td>
+        <td>{{ FPP_VpnVsNonvp }}%</td>
     </tr>
+    <tr>
+
+      <td>{{ SPN_VpnVsNonvp }}%</td>
+      <td>{{ SPP_VpnVsNonvp }}%</td>
+  </tr>
+    <tr>
+      <td>Traffic Pattern Plot </td>
+      <td>{{ FP }}</td>
+      <td>01.0000000000%</td>
+  </tr>
 
   <tr>
-    <td>Ensemble </td>
+    <td>Ensemble (BPS, DF, TPP) </td>
     <td>{{ ensemble }}</td>
+    <td>{{ ensembleResult }} out of 3</td>
   </tr>
   </table>
 

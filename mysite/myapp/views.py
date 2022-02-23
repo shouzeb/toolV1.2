@@ -68,6 +68,7 @@ def webpage2(request):
     result = request.GET["cars"].split(",")[1]
     linkNumberr = request.GET["cars"].split(",")[0]
     linkNumber = linkNumberr.replace(" ","")
+    time = request.GET['time']
     #data = pd.read_csv("links.csv")
     i=0
     BPS_list=[]
@@ -77,7 +78,7 @@ def webpage2(request):
         urlF = str(result)
         amount = 1
         link100_url = urlF
-        link100_duration = 10
+        link100_duration = int(time)
         filename = harvest_video(amount,filename,link100_url,link100_duration)
         print(filename)
         i+=1
@@ -393,50 +394,97 @@ def webpage2(request):
     #link name for selected link number
     selectedLinkNumberName = linksDict[linkNumberr.lower().replace(" ", "")]
     
+    # ensemble list
+    ensembleList = []
+
     #BPS model
-    predict_name = BPSModel(array)
-    ensembleList.append(predict_name)
-    print("predicted by BPS is ", predict_name)
-    predict_name = linksDict[predict_name]
+    lis = []
+    lis  = BPSModel(array)
+    print("predicted by BPS is ",lis)
+    first_predict_name_BPS = lis[0][0]
+    ensembleList.append(first_predict_name_BPS)
+    first_predict_name_BPS = linksDict[first_predict_name_BPS]
+    first_predict_prob_BPS = '{0:13.10f}'.format(float(lis[0][1])*100)
+    second_predict_name_BPS = lis[1][0]
+    second_predict_name_BPS = linksDict[second_predict_name_BPS]
+    second_predict_prob_BPS = '{0:013.10f}'.format(float(lis[1][1])*100)
+    third_predict_name_BPS = lis[2][0]
+    third_predict_name_BPS = linksDict[third_predict_name_BPS]
+    third_predict_prob_BPS = '{0:013.10f}'.format(float(lis[2][1])*100)
+
 
     #detect BPS - Classes (VPN vs NonVPN)
     #predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
     #print("predicted by BPS with classes is ", predict_name_BPS_Classes)
-    #predict_name_BPS_Classes = linksDict[predict_name_BPS_Classes]
-
+    
     #BPS - Without Classes (VPN vs NonVPN)
-    predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
-    print("predicted by BPS without classes is ", predict_name_BPS_Without_Classes)
+    listVpnVsNonvpn  = BPSWithoutClassesVPNvsNonVPN(array)
+    first_predict_name_ten = listVpnVsNonvpn[0][0]
+    #first_predict_name_ten = linksDict[first_predict_name_ten]
+    first_predict_prob_ten = '{0:13.10f}'.format(float(listVpnVsNonvpn[0][1])*100)
+    second_predict_name_ten = listVpnVsNonvpn[1][0]
+    #second_predict_name_ten = linksDict[second_predict_name_ten]
+    second_predict_prob_ten = '{0:013.10f}'.format(float(listVpnVsNonvpn[1][1])*100)
+    print("predicted by BPS without classes is ", listVpnVsNonvpn)
     
     #DF model 
-    predict_name_DF = testingWithFingerprint(array)
-    ensembleList.append(predict_name_DF)
-    print("predicted by df is ", predict_name_DF)
-    predict_name_DF = linksDict[predict_name_DF]
+
+    lis = []
+   
+    lis  = preditWithFingerprint(array)
+    print("predicted by df is ",lis)
+    first_predict_name_DF = lis[0][0]
+    ensembleList.append(first_predict_name_DF)
+    first_predict_name_DF = linksDict[first_predict_name_DF]
+    first_predict_prob_DF = '{0:13.10f}'.format(float(lis[0][1])*100)
+    second_predict_name_DF = lis[1][0]
+    second_predict_name_DF = linksDict[second_predict_name_DF]
+    second_predict_prob_DF = '{0:013.10f}'.format(float(lis[1][1])*100)
+    third_predict_name_DF = lis[2][0]
+    third_predict_name_DF = linksDict[third_predict_name_DF]
+    third_predict_prob_DF = '{0:013.10f}'.format(float(lis[2][1])*100)
+
+    
+    
+    
+
     
     #PAT model
+
+    lis = []
+  
     PATBpsList = generate_PAT(filename,linkNumberr)
-    predict_name_PAT = preditWithPATFingerprint(PATBpsList, linkNumberr)
-    ensembleList.append(predict_name_PAT)
-    print("predicted by PAT is ", predict_name_PAT)
-    predict_name_PAT = linksDict[predict_name_PAT]
-    
-    #ensemble
-    predict_name_ensemble = ensemble(ensembleList)
-    print(ensembleList)
-    print("predicted by ensemble is ", predict_name_ensemble)
-    if predict_name_ensemble != "Ensemble failed":
-        predict_name_ensemble = linksDict[predict_name_ensemble]
+    lis  = preditWithPATFingerprint(PATBpsList, linkNumberr)
+    print("predicted by PAT is ",lis)
+    first_predict_name_PAT = lis[0][0]
+    ensembleList.append(first_predict_name_PAT)
+    first_predict_name_PAT = linksDict[first_predict_name_PAT]
+    first_predict_prob_PAT = '{0:13.10f}'.format(float(lis[0][1])*100)
+    second_predict_name_PAT = lis[1][0]
+    second_predict_name_PAT = linksDict[second_predict_name_PAT]
+    second_predict_prob_PAT = '{0:013.10f}'.format(float(lis[1][1])*100)
+    third_predict_name_PAT = lis[2][0]
+    third_predict_name_PAT = linksDict[third_predict_name_PAT]
+    third_predict_prob_PAT = '{0:013.10f}'.format(float(lis[2][1])*100)
+
+
 
     #flowpic
     predict_name_FP,uriFP = testingWithFlowpic(filename)
     print("predicted by fp is ", predict_name_FP)
-    predict_name_FP = linksDict[predict_name_FP] 
+    predict_name_FP = linksDict[predict_name_FP]
+
+    predict_name_ensemble,counter = ensemble(ensembleList)
+    print(ensembleList)
+    print(counter)
+    print("predicted by ensemble is ", predict_name_ensemble)
+    if int(counter) >= 2:
+        predict_name_ensemble = linksDict[predict_name_ensemble]
     plt.close()
     plt.cla()
     plt.clf()
 
-    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":selectedLinkNumberName,"predictedName":predict_name,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP,"PAT":predict_name_PAT,"ensemble":predict_name_ensemble})
+    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":selectedLinkNumberName,"predicted_Name_BPS_FPN":first_predict_name_BPS,"predicted_Name_BPS_FPP":first_predict_prob_BPS,"predicted_Name_BPS_SPN":second_predict_name_BPS,"predicted_Name_BPS_SPP":second_predict_prob_BPS,"predicted_Name_BPS_TPN":third_predict_name_BPS,"predicted_Name_BPS_TPP":third_predict_prob_BPS,"predicted_Name_DF_FPN":first_predict_name_DF,"predicted_Name_DF_FPP":first_predict_prob_DF,"predicted_Name_DF_SPN":second_predict_name_DF,"predicted_Name_DF_SPP":second_predict_prob_DF,"predicted_Name_DF_TPN":third_predict_name_DF,"predicted_Name_DF_TPP":third_predict_prob_DF,"FP":predict_name_FP,"predicted_Name_PAT_FPN":first_predict_name_PAT,"predicted_Name_PAT_FPP":first_predict_prob_PAT,"predicted_Name_PAT_SPN":second_predict_name_PAT,"predicted_Name_PAT_SPP":second_predict_prob_PAT,"predicted_Name_PAT_TPN":third_predict_name_PAT,"predicted_Name_PAT_TPP":third_predict_prob_PAT,"ensemble":predict_name_ensemble,"ensembleResult":counter,"FPN_VpnVsNonvp":first_predict_name_ten,"FPP_VpnVsNonvp":first_predict_prob_ten,"SPN_VpnVsNonvp":second_predict_name_ten,"SPP_VpnVsNonvp":second_predict_prob_ten})
 
 def BPSModel(array):
 
@@ -461,8 +509,11 @@ def BPSModel(array):
     x3 = x1.reshape(1,120,1)
     y_pred1 = model.predict(x3)
     l_temp.loc[-1]=y_pred1[0]
-    predict_name = l_temp.loc[-1].idxmax()
-    return predict_name
+    sort = sort = l_temp.loc[-1].sort_values(ascending = False)
+    lis=[]
+    for i in range(3):
+        lis.append((sort.index[i],'{0:.20f}'.format(sort[i])))
+    return lis
 
 def BPSClassesVPNvsNonVPN(array):
     
@@ -504,8 +555,11 @@ def BPSWithoutClassesVPNvsNonVPN(array):
 
     l_temp.loc[-1]=y_pred1[0]
 
-    predict_name_BPS_Without_Classes = l_temp.loc[-1].idxmax()
-    return predict_name_BPS_Without_Classes
+    sort = sort = l_temp.loc[-1].sort_values(ascending = False)
+    listVpnVsNonvpn=[]
+    for i in range(2):
+        listVpnVsNonvpn.append((sort.index[i],'{0:.20f}'.format(sort[i])))
+    return listVpnVsNonvpn
 
 def testingWithFingerprint(BPS_list):
     #checking with BPS model        
@@ -524,8 +578,11 @@ def testingWithFingerprint(BPS_list):
     x3 = x1.reshape(1,21,1)
     y_pred1 = model.predict(x3)
     l_temp.loc[-1]=y_pred1[0]
-    predict_name = l_temp.loc[-1].idxmax()
-    return predict_name
+    sort = sort = l_temp.loc[-1].sort_values(ascending = False)
+    lis=[]
+    for i in range(3):
+        lis.append((sort.index[i],'{0:.20f}'.format(sort[i])))
+    return lis
     
 def preditWithFingerprint(BPS_list):
     # data to be written row-wise in csv fil
@@ -590,8 +647,8 @@ def preditWithFingerprint(BPS_list):
     #difFrame.to_csv(r"E:\8-ModelsIntegrationCode\Results\Generated_Fingerprint_"+currentdate+".csv",mode='a',encoding='utf-8',index=False,header=False)
     
     #print(difFrame.iloc[0])
-    predict_name = testingWithFingerprint(difFrame.iloc[0])
-    return predict_name
+    lis = testingWithFingerprint(difFrame.iloc[0])
+    return lis
 
 def remove_ether_header(packet):
     if Ether in packet:
@@ -904,11 +961,11 @@ def testingWithFingerprintPAT(PAT_list,video_name):
     y_pred1 = model.predict(x3)
     
     l_temp.loc[-1]=y_pred1[0]
-    
-    predict_name = l_temp.loc[-1].idxmax()
-    print("Video name was ",video_name,". The predicted link is with PAT is : ",predict_name)
-    
-    return predict_name
+    sort = sort = l_temp.loc[-1].sort_values(ascending = False)
+    lis=[]
+    for i in range(3):
+        lis.append((sort.index[i],'{0:.20f}'.format(sort[i])))
+    return lis
 
 def remotePcTesting(request):
     #result = request.GET["cars"].split(",")[1]
@@ -917,6 +974,7 @@ def remotePcTesting(request):
     linkNumber = "remotePc"
     linkNumberr = "remotePc"
     result = "remotePc"
+    time = request.POST['time']
     #data = pd.read_csv("links.csv")
     i=0
     BPS_list=[]
@@ -926,7 +984,7 @@ def remotePcTesting(request):
         #urlF = str(result)
         amount = 1
         #link100_url = urlF
-        link100_duration = 10
+        link100_duration = int(time)
         filename = harvest_video_remote(amount,filename,link100_duration)
         print(filename)
         i+=1
@@ -1246,46 +1304,91 @@ def remotePcTesting(request):
     ensembleList = []
 
     #BPS model
-    predict_name = BPSModel(array)
-    ensembleList.append(predict_name)
-    print("predicted by BPS is ", predict_name)
-    predict_name = linksDict[predict_name]
+    lis = []
+    lis  = BPSModel(array)
+    print("predicted by BPS is ",lis)
+    first_predict_name_BPS = lis[0][0]
+    ensembleList.append(first_predict_name_BPS)
+    first_predict_name_BPS = linksDict[first_predict_name_BPS]
+    first_predict_prob_BPS = '{0:13.10f}'.format(float(lis[0][1])*100)
+    second_predict_name_BPS = lis[1][0]
+    second_predict_name_BPS = linksDict[second_predict_name_BPS]
+    second_predict_prob_BPS = '{0:013.10f}'.format(float(lis[1][1])*100)
+    third_predict_name_BPS = lis[2][0]
+    third_predict_name_BPS = linksDict[third_predict_name_BPS]
+    third_predict_prob_BPS = '{0:013.10f}'.format(float(lis[2][1])*100)
+
 
     #detect BPS - Classes (VPN vs NonVPN)
     #predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
     #print("predicted by BPS with classes is ", predict_name_BPS_Classes)
     
     #BPS - Without Classes (VPN vs NonVPN)
-    predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
-    print("predicted by BPS without classes is ", predict_name_BPS_Without_Classes)
+    listVpnVsNonvpn  = BPSWithoutClassesVPNvsNonVPN(array)
+    first_predict_name_ten = listVpnVsNonvpn[0][0]
+    #first_predict_name_ten = linksDict[first_predict_name_ten]
+    first_predict_prob_ten = '{0:13.10f}'.format(float(listVpnVsNonvpn[0][1])*100)
+    second_predict_name_ten = listVpnVsNonvpn[1][0]
+    #second_predict_name_ten = linksDict[second_predict_name_ten]
+    second_predict_prob_ten = '{0:013.10f}'.format(float(listVpnVsNonvpn[1][1])*100)
+    print("predicted by BPS without classes is ", listVpnVsNonvpn)
     
     #DF model 
-    predict_name_DF = testingWithFingerprint(array)
-    ensembleList.append(predict_name_DF)
-    print("predicted by df is ", predict_name_DF)
-    predict_name_DF = linksDict[predict_name_DF]
+
+    lis = []
+   
+    lis  = preditWithFingerprint(array)
+    print("predicted by df is ",lis)
+    first_predict_name_DF = lis[0][0]
+    ensembleList.append(first_predict_name_DF)
+    first_predict_name_DF = linksDict[first_predict_name_DF]
+    first_predict_prob_DF = '{0:13.10f}'.format(float(lis[0][1])*100)
+    second_predict_name_DF = lis[1][0]
+    second_predict_name_DF = linksDict[second_predict_name_DF]
+    second_predict_prob_DF = '{0:013.10f}'.format(float(lis[1][1])*100)
+    third_predict_name_DF = lis[2][0]
+    third_predict_name_DF = linksDict[third_predict_name_DF]
+    third_predict_prob_DF = '{0:013.10f}'.format(float(lis[2][1])*100)
+
+    
+    
+    
+
     
     #PAT model
+
+    lis = []
+  
     PATBpsList = generate_PAT(filename,linkNumberr)
-    predict_name_PAT = preditWithPATFingerprint(PATBpsList, linkNumberr)
-    ensembleList.append(predict_name_PAT)
-    print("predicted by PAT is ", predict_name_PAT)
-    predict_name_PAT = linksDict[predict_name_PAT]
+    lis  = preditWithPATFingerprint(PATBpsList, linkNumberr)
+    print("predicted by PAT is ",lis)
+    first_predict_name_PAT = lis[0][0]
+    ensembleList.append(first_predict_name_PAT)
+    first_predict_name_PAT = linksDict[first_predict_name_PAT]
+    first_predict_prob_PAT = '{0:13.10f}'.format(float(lis[0][1])*100)
+    second_predict_name_PAT = lis[1][0]
+    second_predict_name_PAT = linksDict[second_predict_name_PAT]
+    second_predict_prob_PAT = '{0:013.10f}'.format(float(lis[1][1])*100)
+    third_predict_name_PAT = lis[2][0]
+    third_predict_name_PAT = linksDict[third_predict_name_PAT]
+    third_predict_prob_PAT = '{0:013.10f}'.format(float(lis[2][1])*100)
+
+
 
     #flowpic
     predict_name_FP,uriFP = testingWithFlowpic(filename)
     print("predicted by fp is ", predict_name_FP)
     predict_name_FP = linksDict[predict_name_FP]
 
-    #ensemble
-    predict_name_ensemble = ensemble(ensembleList)
+    predict_name_ensemble,counter = ensemble(ensembleList)
     print(ensembleList)
+    print(counter)
     print("predicted by ensemble is ", predict_name_ensemble)
-    if predict_name_ensemble != "Ensemble failed":
+    if int(counter) >= 2:
         predict_name_ensemble = linksDict[predict_name_ensemble]
     
     
-    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":linkNumberr,"predictedName":predict_name,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP,"PAT":predict_name_PAT,"ensemble":predict_name_ensemble})
+    return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":linkNumberr,"predicted_Name_BPS_FPN":first_predict_name_BPS,"predicted_Name_BPS_FPP":first_predict_prob_BPS,"predicted_Name_BPS_SPN":second_predict_name_BPS,"predicted_Name_BPS_SPP":second_predict_prob_BPS,"predicted_Name_BPS_TPN":third_predict_name_BPS,"predicted_Name_BPS_TPP":third_predict_prob_BPS,"predicted_Name_DF_FPN":first_predict_name_DF,"predicted_Name_DF_FPP":first_predict_prob_DF,"predicted_Name_DF_SPN":second_predict_name_DF,"predicted_Name_DF_SPP":second_predict_prob_DF,"predicted_Name_DF_TPN":third_predict_name_DF,"predicted_Name_DF_TPP":third_predict_prob_DF,"FP":predict_name_FP,"predicted_Name_PAT_FPN":first_predict_name_PAT,"predicted_Name_PAT_FPP":first_predict_prob_PAT,"predicted_Name_PAT_SPN":second_predict_name_PAT,"predicted_Name_PAT_SPP":second_predict_prob_PAT,"predicted_Name_PAT_TPN":third_predict_name_PAT,"predicted_Name_PAT_TPP":third_predict_prob_PAT,"ensemble":predict_name_ensemble,"ensembleResult":counter,"FPN_VpnVsNonvp":first_predict_name_ten,"FPP_VpnVsNonvp":first_predict_prob_ten,"SPN_VpnVsNonvp":second_predict_name_ten,"SPP_VpnVsNonvp":second_predict_prob_ten})
 
 def clickOnAd(driver):
     try:
@@ -1501,9 +1604,10 @@ def ensemble(List):
             num = i
     print(counter)
     if counter >= 2:
-        return num 
+        return num, counter 
     else:
-        return "Ensemble failed"
+        num = "Ensemble failed"
+        return num, counter
 
 
 from django.shortcuts import render, HttpResponse
@@ -1847,55 +1951,95 @@ def upload(request):
 
     #dict of links
     linksDict = {"link1":"Learn Object Oriented Programming in 10 minutes (Java)","link111":"Arslan Ash vs Knee - EVO 2019 Grand Finals - Tekken 7","link112":"How To Make Marble Cake At Home in Urdu I Marble Cake Recipe I No Oven Cake Recipe I Marble Tea Cake","link113":"Mozzarella Cheese Recipe By ijaz Ansari | How To Make Mozzarella Cheese At Home | No Rennet |","link114":"Extra Crispy Fried Chicken Recipe By Food Fusion (Ramzan Special)","link115":"10 Most Expensive Things Dwayne The Rock Johnson Owns - MET Ep 14","link116":"Shahid Afridi Home Tour | Exclusive Video","link117":"Ek Sharabi Jo Sharab Se Roza Iftar Krta Tha | Latest Ramadan Bayan by Maulana Tariq Jameel 2017","link118":"Daniel Bryan & Roman Reigns vs. Seth Rollins Big Show Kane & J&J Security: Raw February 9 2015","link119":"Spintop Snipers | Amazing Top Trick Shots!","link120":"Random Acts of Kindness - Faith In Humanity Restored #3","link121":"Sony - World's First Smartphone To Do This","link122":"AVENGERS ENDGAME Becoming Fat Thor Behind the Scenes Bonus Clip (2019) Chris Hemsworth Move HD","link123":"ScaleTrains BNSF HO Scale Dash 9 C44-9W Unboxing","link124":"Xiaomi Mi Mix Alpha Impressions: The Wraparound Display!","link125":"Shan-e-Iftar - Shan E Dastarkhwan [Chicken Parmesan] - 23rd April 2021 - Chef Farah","link126":"Latest Trouser Design 2021 | Capri Design 2021 | Plazo Pant Design","link128":"VW Amarok Tackling Gunshot Creek Sept 2015","link129":"Eau De Bean | Mr Bean Cartoon Season 3 | NEW FULL EPISODE | Season 3 Episode 12 | Mr Bean Official","link2":"Why You Shouldn’t Learn Python In 2021","link3":"10 LATEST TECHNOLOGY INVENTIONS ▶ Smart Vehicle You Must See","link31":"Can My Water Cooled Raspberry Pi Cluster Beat My MacBook?","link32":"LIFE IN RAMZAN! | COMEDY VIDEO","link33":"Russell Shakib & Malan Join in | Zero Tolerance required for PSL Protocols","link34":"TensorFlow.js Quick Start","link35":"you need to learn Virtual Machines RIGHT NOW!! (Kali Linux VM Ubuntu Windows)","link36":"Coding Interview | Software Engineer @ Bloomberg (Part 1)","link38":"Amazing Brathwaite 100! | West Indies v New Zealand - Match Highlights | ICC Cricket World Cup 2019","link39":"Ferocious Dinosaur Moments | Top 5 | BBC Earth","link40":"10 Latest NEW TECH GADGETS AND INVENTIONS 2020 | Available On Amazon | You Can Buy in ONLINE STORE","link41":"Ranking push of my team's OP Play video | Many Hackers | PUBG MOBILE","link85":"AIRPLANE Bean | Bean Movie | Funny Clips | Mr Bean Official","link86":"Mini LED cube with 54 pixel WiFi & gyroscope | SMT hotplate soldering | Pikocube v2.0","link87":"ASMR Video | Build Modern Glass Elevator For Underground And Rooftop Infinity Swimming Pool","link88":"NEW BEST LANDING IN MILITARY BASE","link89":"Random Facts Around The World | Part 57 | Urdu / Hindi","link90":"How THANOS Knew TONY In Avengers: Infinity War? | Super Questions Ep. 5 | Super Access","link91":"Data Center NETWORKS (what do they look like??) // FREE CCNA // EP 7","link92":"New Ghar Saman Shift Karna Shuru Kar diya","link93":"2v4 CLUTCH FOR THE WWCD • PMPL FINALS • 2 MAN CHICKEN DINNER •","link94":"MAKING A SNEAKER ROOM IN MY NEW HOUSE!","link95":"5 Richest Kids Of Pakistan | TOP X TV","link96":"Levels of Ultra Instinct (1% - 50% - 100%)"}
-
+    linkNumberr = "Local Storage"
     # ensemble list
     ensembleList = []
-
     #BPS model
-    predict_name = BPSModel(array)
-    ensembleList.append(predict_name)
-    print("predicted by BPS is ", predict_name)
-    predict_name = linksDict[predict_name]
+    lis = []
+    lis  = BPSModel(array)
+    print("predicted by BPS is ",lis)
+    first_predict_name_BPS = lis[0][0]
+    ensembleList.append(first_predict_name_BPS)
+    first_predict_name_BPS = linksDict[first_predict_name_BPS]
+    first_predict_prob_BPS = '{0:13.10f}'.format(float(lis[0][1])*100)
+    second_predict_name_BPS = lis[1][0]
+    second_predict_name_BPS = linksDict[second_predict_name_BPS]
+    second_predict_prob_BPS = '{0:013.10f}'.format(float(lis[1][1])*100)
+    third_predict_name_BPS = lis[2][0]
+    third_predict_name_BPS = linksDict[third_predict_name_BPS]
+    third_predict_prob_BPS = '{0:013.10f}'.format(float(lis[2][1])*100)
+
 
     #detect BPS - Classes (VPN vs NonVPN)
     #predict_name_BPS_Classes = BPSClassesVPNvsNonVPN(array)
     #print("predicted by BPS with classes is ", predict_name_BPS_Classes)
-    #predict_name_BPS_Classes = linksDict[predict_name_BPS_Classes]
     
     #BPS - Without Classes (VPN vs NonVPN)
-    predict_name_BPS_Without_Classes = BPSWithoutClassesVPNvsNonVPN(array)
-    print("predicted by BPS without classes is ", predict_name_BPS_Without_Classes)
+    listVpnVsNonvpn  = BPSWithoutClassesVPNvsNonVPN(array)
+    first_predict_name_ten = listVpnVsNonvpn[0][0]
+    #first_predict_name_ten = linksDict[first_predict_name_ten]
+    first_predict_prob_ten = '{0:13.10f}'.format(float(listVpnVsNonvpn[0][1])*100)
+    second_predict_name_ten = listVpnVsNonvpn[1][0]
+    #second_predict_name_ten = linksDict[second_predict_name_ten]
+    second_predict_prob_ten = '{0:013.10f}'.format(float(listVpnVsNonvpn[1][1])*100)
+    print("predicted by BPS without classes is ", listVpnVsNonvpn)
     
     #DF model 
-    predict_name_DF = testingWithFingerprint(array)
-    ensembleList.append(predict_name_DF)
-    print("predicted by df is ", predict_name_DF)
-    predict_name_DF = linksDict[predict_name_DF]
+
+    lis = []
+   
+    lis  = preditWithFingerprint(array)
+    print("predicted by df is ",lis)
+    first_predict_name_DF = lis[0][0]
+    ensembleList.append(first_predict_name_DF)
+    first_predict_name_DF = linksDict[first_predict_name_DF]
+    first_predict_prob_DF = '{0:13.10f}'.format(float(lis[0][1])*100)
+    second_predict_name_DF = lis[1][0]
+    second_predict_name_DF = linksDict[second_predict_name_DF]
+    second_predict_prob_DF = '{0:013.10f}'.format(float(lis[1][1])*100)
+    third_predict_name_DF = lis[2][0]
+    third_predict_name_DF = linksDict[third_predict_name_DF]
+    third_predict_prob_DF = '{0:013.10f}'.format(float(lis[2][1])*100)
+
+    
+    
+    
+
     
     #PAT model
-    linkNumberr = "Local Storage"
+
+    lis = []
+  
     PATBpsList = generate_PAT(file_name,linkNumberr)
-    predict_name_PAT = preditWithPATFingerprint(PATBpsList, linkNumberr)
-    ensembleList.append(predict_name_PAT)
-    print("predicted by PAT is ", predict_name_PAT)
-    predict_name_PAT = linksDict[predict_name_PAT]
-    
+    lis  = preditWithPATFingerprint(PATBpsList, linkNumberr)
+    print("predicted by PAT is ",lis)
+    first_predict_name_PAT = lis[0][0]
+    ensembleList.append(first_predict_name_PAT)
+    first_predict_name_PAT = linksDict[first_predict_name_PAT]
+    first_predict_prob_PAT = '{0:13.10f}'.format(float(lis[0][1])*100)
+    second_predict_name_PAT = lis[1][0]
+    second_predict_name_PAT = linksDict[second_predict_name_PAT]
+    second_predict_prob_PAT = '{0:013.10f}'.format(float(lis[1][1])*100)
+    third_predict_name_PAT = lis[2][0]
+    third_predict_name_PAT = linksDict[third_predict_name_PAT]
+    third_predict_prob_PAT = '{0:013.10f}'.format(float(lis[2][1])*100)
+
+
 
     #flowpic
     predict_name_FP,uriFP = testingWithFlowpic(file_name)
     print("predicted by fp is ", predict_name_FP)
     predict_name_FP = linksDict[predict_name_FP]
-    
-    #ensemble
-    predict_name_ensemble = ensemble(ensembleList)
+
+    predict_name_ensemble,counter = ensemble(ensembleList)
     print(ensembleList)
+    print(counter)
     print("predicted by ensemble is ", predict_name_ensemble)
-    if predict_name_ensemble != "Ensemble failed":
+    if int(counter) >= 2:
         predict_name_ensemble = linksDict[predict_name_ensemble]
-
     
 
     
 
 
-    return render(request ,"index.html",{"something":True,"sum":file_name,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"predictedName":predict_name,"bpsWithoutClasses":predict_name_BPS_Without_Classes,"DF":predict_name_DF,"FP":predict_name_FP,"PAT":predict_name_PAT,"ensemble":predict_name_ensemble})
+    return render(request ,"index.html",{"something":True,"sum":file_name,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"predicted_Name_BPS_FPN":first_predict_name_BPS,"predicted_Name_BPS_FPP":first_predict_prob_BPS,"predicted_Name_BPS_SPN":second_predict_name_BPS,"predicted_Name_BPS_SPP":second_predict_prob_BPS,"predicted_Name_BPS_TPN":third_predict_name_BPS,"predicted_Name_BPS_TPP":third_predict_prob_BPS,"predicted_Name_DF_FPN":first_predict_name_DF,"predicted_Name_DF_FPP":first_predict_prob_DF,"predicted_Name_DF_SPN":second_predict_name_DF,"predicted_Name_DF_SPP":second_predict_prob_DF,"predicted_Name_DF_TPN":third_predict_name_DF,"predicted_Name_DF_TPP":third_predict_prob_DF,"FP":predict_name_FP,"predicted_Name_PAT_FPN":first_predict_name_PAT,"predicted_Name_PAT_FPP":first_predict_prob_PAT,"predicted_Name_PAT_SPN":second_predict_name_PAT,"predicted_Name_PAT_SPP":second_predict_prob_PAT,"predicted_Name_PAT_TPN":third_predict_name_PAT,"predicted_Name_PAT_TPP":third_predict_prob_PAT,"ensemble":predict_name_ensemble,"ensembleResult":counter,"FPN_VpnVsNonvp":first_predict_name_ten,"FPP_VpnVsNonvp":first_predict_prob_ten,"SPN_VpnVsNonvp":second_predict_name_ten,"SPP_VpnVsNonvp":second_predict_prob_ten})

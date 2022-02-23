@@ -92,7 +92,8 @@
     
 
   </select>
-
+  <input type="number" autocomplete="off" id="time" name="time"
+  class="form-control text-dark fw-bold bg-white" placeholder="Video Time" required>
   <input id="fname" type="submit" value="Generate Graphs">
   <div id="countdown" style="font-size: x-large; font-weight: bold; color: rgb(251, 255, 0); font-family: 'Source Serif Pro', serif;"
 class="position-absolute bottom-100 start-50 translate-middle-x h5"></div>
@@ -136,6 +137,8 @@ class="position-absolute bottom-100 start-50 translate-middle-x h5"></div>
 
 <form  method= "POST" action ="{% url 'remotePcTesting'%}" enctype = "multipart/form-data">
 {% csrf_token %}
+<input type="number" autocomplete="off" id="time" name="time"
+class="form-control text-dark fw-bold bg-white" placeholder="Video Time" required>
 <input type = "submit" name = "submit" size="50%" value="Detect Video">
 </form>
 
