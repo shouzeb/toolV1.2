@@ -589,7 +589,7 @@ def preditWithFingerprint(BPS_list):
     data = [BPS_list]
       
     # opening the csv file in 'w+' mode
-    file = open(r"E:\8-ModelsIntegrationCode\Results\test_BPS test.csv", 'w', newline ='')
+    file = open(r"E:\ads\toolV1.2\mysite\Results\test_BPS test.csv", 'w', newline ='')
       
     # writing the data into the file
     with file:    
@@ -597,7 +597,7 @@ def preditWithFingerprint(BPS_list):
         write.writerows(data) 
     file.close()
         
-    dataorig =  pd.read_csv(r"E:\8-ModelsIntegrationCode\Results\test_BPS test.csv",header=None)
+    dataorig =  pd.read_csv(r"E:\ads\toolV1.2\mysite\Results\test_BPS test.csv",header=None)
     data = dataorig.copy()
     data = data.iloc[:,:-1]
     labels = dataorig.iloc[:,-1].values
@@ -644,7 +644,7 @@ def preditWithFingerprint(BPS_list):
     # for i in range (1,22):
     #     data.insert((2+(i-1)*2),str(i)+"-"+str(i-1),difFrame.iloc[:,i-1])
     difFrame.insert(len(difFrame.columns), None, labels)
-    #difFrame.to_csv(r"E:\8-ModelsIntegrationCode\Results\Generated_Fingerprint_"+currentdate+".csv",mode='a',encoding='utf-8',index=False,header=False)
+    #difFrame.to_csv(r"E:\E:\ads\toolV1.2\mysite\Results\Results\Generated_Fingerprint_"+currentdate+".csv",mode='a',encoding='utf-8',index=False,header=False)
     
     #print(difFrame.iloc[0])
     lis = testingWithFingerprint(difFrame.iloc[0])
@@ -733,7 +733,7 @@ def mostOccuredIPFinder(file):
 
 def testingWithFlowpic(filename):
     
-    out_path = r"E:\8-ModelsIntegrationCode\FlowPics\\"
+    out_path = r"E:\ads\toolV1.2\mysite\Results\FlowPics\\"
     #path_of_csv = r"E:\ads\models integration code\VPN.csv"
     
     
