@@ -7,12 +7,10 @@ import os
 import sys
 import shutil
 from csv import DictWriter
-
 from numpy import string_
 import matplotlib
 import pickle5 as pickle
 matplotlib.use('Agg')
-
 import numpy as np
 import urllib,base64
 import matplotlib.pyplot as plt
@@ -28,11 +26,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
-from keras.models import load_model
 from scapy.all import *
-
-
 from keras.models import load_model
 from keras.preprocessing.image import load_img
 from keras.preprocessing.image import img_to_array
@@ -56,7 +50,7 @@ def tostring1(x):
 
 def webpage1(request):
    
-    csvfile = "E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\csvOfLinks\\linksCsv.csv"
+    csvfile = os.path.join(os.getcwd(),"csvOfLinks\\linksCsv.csv")
     data = pd.read_csv(csvfile)
     
     style = '<style>.dataframe tr { text-align: left; }</style>'
@@ -104,7 +98,7 @@ def webpage2(request):
         mostOccuredIp = occurence_count.most_common(1)[0][0]
         
     print("ip is", mostOccuredIp)
-    with open("E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
         file = filename
@@ -128,7 +122,7 @@ def webpage2(request):
     x = []
     y = []
     array = []
-    with open('E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv','r') as csvfile:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
         plots = csv.reader(csvfile, delimiter = ',')
         print(plots) 
         for col in plots:
@@ -166,7 +160,7 @@ def webpage2(request):
     yy = []
 
     sum=0
-    with open('E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv','r') as csvfile:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
         plots = csv.reader(csvfile, delimiter = ',')
         print(plots)
         for col in plots:
@@ -208,7 +202,7 @@ def webpage2(request):
 
     
     #packets per second 
-    with open(r"E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
            
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
@@ -243,7 +237,7 @@ def webpage2(request):
         BPS_list.clear()
         plt.close()
     #instantaneous graph
-    with open(r"E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
         file = filename
@@ -365,7 +359,7 @@ def webpage2(request):
     #model predication
     #------------------- df  = list of BPS -----------------
     BPS_list=[]
-    with open("E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
         file = filename
@@ -487,13 +481,13 @@ def webpage2(request):
     return render(request,"page2.html",{'cars':result,'data':uri,"mean":mean,"std":std,"qur1":firstQuartile,"median":median,"qur2":secondQuartile,"packetsPerSecond":uri1,"Instantaneous":uri2,"shortOnOffCycle":uri3,"normalized":uri4,"bytesPerPeak":uri5,"flowPicImg":uriFP,"linkNumber":selectedLinkNumberName,"predicted_Name_BPS_FPN":first_predict_name_BPS,"predicted_Name_BPS_FPP":first_predict_prob_BPS,"predicted_Name_BPS_SPN":second_predict_name_BPS,"predicted_Name_BPS_SPP":second_predict_prob_BPS,"predicted_Name_BPS_TPN":third_predict_name_BPS,"predicted_Name_BPS_TPP":third_predict_prob_BPS,"predicted_Name_DF_FPN":first_predict_name_DF,"predicted_Name_DF_FPP":first_predict_prob_DF,"predicted_Name_DF_SPN":second_predict_name_DF,"predicted_Name_DF_SPP":second_predict_prob_DF,"predicted_Name_DF_TPN":third_predict_name_DF,"predicted_Name_DF_TPP":third_predict_prob_DF,"FP":predict_name_FP,"predicted_Name_PAT_FPN":first_predict_name_PAT,"predicted_Name_PAT_FPP":first_predict_prob_PAT,"predicted_Name_PAT_SPN":second_predict_name_PAT,"predicted_Name_PAT_SPP":second_predict_prob_PAT,"predicted_Name_PAT_TPN":third_predict_name_PAT,"predicted_Name_PAT_TPP":third_predict_prob_PAT,"ensemble":predict_name_ensemble,"ensembleResult":counter,"FPN_VpnVsNonvp":first_predict_name_ten,"FPP_VpnVsNonvp":first_predict_prob_ten,"SPN_VpnVsNonvp":second_predict_name_ten,"SPP_VpnVsNonvp":second_predict_prob_ten})
 
 def BPSModel(array):
-
+    print("\n\n\n\n\n",os.path.join(os.getcwd(),"models\BPS model\stable_Model_05-04-2022_10275608.h5"),"\n\n\n\n\n")
     #BPS model
-    model_path=r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\BPS model\stable_Model_05-04-2022_10275608.h5"       
+    model_path=os.path.join(os.getcwd(),"models\BPS model\stable_Model_05-04-2022_10275608.h5")       
     model = load_model(model_path)
     
     data = ""
-    with open(r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\BPS model\stableModel_05-04-2022_10275608.pkl", "rb") as fh:
+    with open(os.path.join(os.getcwd(),"models\BPS model\stableModel_05-04-2022_10275608.pkl"), "rb") as fh:
       data = pickle.load(fh)
     l_temp=(data)
     x = []
@@ -1011,7 +1005,7 @@ def remotePcTesting(request):
         mostOccuredIp = occurence_count.most_common(1)[0][0]
         
     print("ip is", mostOccuredIp)
-    with open("E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
         file = filename
@@ -1037,7 +1031,7 @@ def remotePcTesting(request):
     x = []
     y = []
     array = []
-    with open('E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv','r') as csvfile:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
         plots = csv.reader(csvfile, delimiter = ',')
         print(plots) 
         for col in plots:
@@ -1075,7 +1069,7 @@ def remotePcTesting(request):
     yy = []
 
     sum=0
-    with open('E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv','r') as csvfile:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
         plots = csv.reader(csvfile, delimiter = ',')
         print(plots)
         for col in plots:
@@ -1115,7 +1109,7 @@ def remotePcTesting(request):
 
     
     #packets per second 
-    with open(r"E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
            
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
@@ -1150,7 +1144,7 @@ def remotePcTesting(request):
         BPS_list.clear()
         plt.close()
     #instantaneous graph
-    with open(r"E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
         file = filename
@@ -1275,7 +1269,7 @@ def remotePcTesting(request):
     #model predication
     #------------------- df  = list of BPS -----------------
     BPS_list=[]
-    with open("E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
         file = filename
@@ -1639,7 +1633,7 @@ def upload(request):
             occurence_count = Counter(uniqueB)
             mostOccuredIp = occurence_count.most_common(1)[0][0]
         print("ip is", mostOccuredIp)
-        with open("E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+        with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
             writer = csv.writer(csv_file)
             
             fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
@@ -1666,7 +1660,7 @@ def upload(request):
     x = []
     y = []
     array = []
-    with open('E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv','r') as csvfile:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
         plots = csv.reader(csvfile, delimiter = ',')
         
         for col in plots:
@@ -1705,7 +1699,7 @@ def upload(request):
     yy = []
 
     sum=0
-    with open('E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv','r') as csvfile:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
         plots = csv.reader(csvfile, delimiter = ',')
         print(plots)
         for col in plots:
@@ -1745,7 +1739,7 @@ def upload(request):
 
     
     #packets per second 
-    with open(r"E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
            
         
@@ -1792,7 +1786,7 @@ def upload(request):
 
 
     #instantaneous graph
-    with open(r"E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
            
        
@@ -1925,7 +1919,7 @@ def upload(request):
     #model predication
     #------------------- df  = list of BPS -----------------
     BPS_list=[]
-    with open("E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolV1.2\mysite\\nonVpnCsv\\NonVPN_PCAPs_1300ms.csv", "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         
         
