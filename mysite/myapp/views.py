@@ -489,11 +489,11 @@ def webpage2(request):
 def BPSModel(array):
 
     #BPS model
-    model_path=r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\BPS model\NonVPN_04-01-2022-10-46_9830494.h5"       
+    model_path=r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\BPS model\stable_Model_05-04-2022_10275608.h5"       
     model = load_model(model_path)
     
     data = ""
-    with open(r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\BPS model\NonVPN_04-01-2022-10-46_9830494.pkl", "rb") as fh:
+    with open(r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\BPS model\stableModel_05-04-2022_10275608.pkl", "rb") as fh:
       data = pickle.load(fh)
     l_temp=(data)
     x = []
