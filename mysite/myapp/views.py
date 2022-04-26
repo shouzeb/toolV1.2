@@ -50,7 +50,7 @@ def tostring1(x):
 
 def webpage1(request):
    
-    csvfile = os.path.join(os.getcwd(),"csvOfLinks\\linksCsv.csv")
+    csvfile = os.path.join(os.getcwd(),"csvOfLinks","linksCsv.csv")
     data = pd.read_csv(csvfile)
     
     style = '<style>.dataframe tr { text-align: left; }</style>'
@@ -98,7 +98,7 @@ def webpage2(request):
         mostOccuredIp = occurence_count.most_common(1)[0][0]
         
     print("ip is", mostOccuredIp)
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
         file = filename
@@ -122,7 +122,7 @@ def webpage2(request):
     x = []
     y = []
     array = []
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
         plots = csv.reader(csvfile, delimiter = ',')
         print(plots) 
         for col in plots:
@@ -160,7 +160,7 @@ def webpage2(request):
     yy = []
 
     sum=0
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
         plots = csv.reader(csvfile, delimiter = ',')
         print(plots)
         for col in plots:
@@ -202,7 +202,7 @@ def webpage2(request):
 
     
     #packets per second 
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
            
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
@@ -237,7 +237,7 @@ def webpage2(request):
         BPS_list.clear()
         plt.close()
     #instantaneous graph
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
         file = filename
@@ -359,7 +359,7 @@ def webpage2(request):
     #model predication
     #------------------- df  = list of BPS -----------------
     BPS_list=[]
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
         file = filename
@@ -511,8 +511,8 @@ def BPSModel(array):
 
 def BPSClassesVPNvsNonVPN(array):
     
-    model = load_model(r'E:\oneDrive\OneDrive - Higher Education Commission\\ads\\modelfiles\\BPS - Classes (VPN vs NonVPN)(pending)\\Classes.h5')
-    l_temp=pd.read_pickle(r'E:\oneDrive\OneDrive - Higher Education Commission\\ads\\modelfiles\\BPS - Classes (VPN vs NonVPN)(pending)\\Classes.pkl')
+    model = load_model(os.path.join(os.getcwd(),"models","BPS - Classes (VPN vs NonVPN)(pending)","Classes.h5"))
+    l_temp=pd.read_pickle(os.path.join(os.getcwd(),"models","BPS - Classes (VPN vs NonVPN)(pending)","Classes.pkl"))
     x = []
     df =  pd.DataFrame (array, columns = ['column_name'])
     df['column_name'] = df['column_name'].astype(int)
@@ -532,8 +532,8 @@ def BPSClassesVPNvsNonVPN(array):
     return predict_name_BPS_Classes
 
 def BPSWithoutClassesVPNvsNonVPN(array):
-    model = load_model(r'E:\oneDrive\OneDrive - Higher Education Commission\\ads\\modelfiles\\BPS - Without Classes (VPN vs NonVPN)(pending)\\Without_Classes.h5')
-    l_temp=pd.read_pickle(r'E:\oneDrive\OneDrive - Higher Education Commission\\ads\\modelfiles\\BPS - Without Classes (VPN vs NonVPN)(pending)\\Without Classes.pkl')
+    model = load_model(os.path.join(os.getcwd(),"models","BPS - Without Classes (VPN vs NonVPN)(pending)","Without_Classes.h5"))
+    l_temp=pd.read_pickle(os.path.join(os.getcwd(),"models","BPS - Without Classes (VPN vs NonVPN)(pending)","Without Classes.pkl"))
     x = []
     df =  pd.DataFrame (array, columns = ['column_name'])
     df['column_name'] = df['column_name'].astype(int)
@@ -557,12 +557,12 @@ def BPSWithoutClassesVPNvsNonVPN(array):
 
 def testingWithFingerprint(BPS_list):
     #checking with BPS model        
-    model_path=r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\DF BPS\DF_769000000000000.h5"   
+    model_path=os.path.join(os.getcwd(),"models","DF BPS","DF_769000000000000.h5")   
     model = load_model(model_path)
-    #l_temp=pd.read_pickle(r"E:\oneDrive\OneDrive - Higher Education Commission\8-ModelsIntegrationCode\Code\DFModel\Train_FP1.pkl")
+    #l_temp=pd.read_pickle(os.path.join(os.getcwd(),"models","DF BPS","Train_FP1.pkl"))
     import pickle5 as pickle
     data = ""
-    with open(r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\DF BPS\Train_FP1.pkl", "rb") as fh:
+    with open(os.path.join(os.getcwd(),"models","DF BPS","Train_FP1.pkl"), "rb") as fh:
       data = pickle.load(fh)
     l_temp=(data)
     array = BPS_list[0:21]
@@ -583,7 +583,7 @@ def preditWithFingerprint(BPS_list):
     data = [BPS_list]
       
     # opening the csv file in 'w+' mode
-    file = open(r"E:\oneDrive\OneDrive - Higher Education Commission\ads\toolV1.2\mysite\Results\test_BPS test.csv", 'w', newline ='')
+    file = open(os.path.join(os.getcwd(),"Results","test_BPS test.csv"), 'w', newline ='')
       
     # writing the data into the file
     with file:    
@@ -591,7 +591,7 @@ def preditWithFingerprint(BPS_list):
         write.writerows(data) 
     file.close()
         
-    dataorig =  pd.read_csv(r"E:\oneDrive\OneDrive - Higher Education Commission\ads\toolV1.2\mysite\Results\test_BPS test.csv",header=None)
+    dataorig =  pd.read_csv(os.path.join(os.getcwd(),"Results","test_BPS test.csv"),header=None)
     data = dataorig.copy()
     data = data.iloc[:,:-1]
     labels = dataorig.iloc[:,-1].values
@@ -638,7 +638,7 @@ def preditWithFingerprint(BPS_list):
     # for i in range (1,22):
     #     data.insert((2+(i-1)*2),str(i)+"-"+str(i-1),difFrame.iloc[:,i-1])
     difFrame.insert(len(difFrame.columns), None, labels)
-    #difFrame.to_csv(r"E:\oneDrive\OneDrive - Higher Education Commission\E:\oneDrive\OneDrive - Higher Education Commission\ads\toolV1.2\mysite\Results\Results\Generated_Fingerprint_"+currentdate+".csv",mode='a',encoding='utf-8',index=False,header=False)
+    #difFrame.to_csv(os.path.join(os.getcwd(),"Results","Results","Generated_Fingerprint_"+currentdate+".csv"),mode='a',encoding='utf-8',index=False,header=False)
     
     #print(difFrame.iloc[0])
     lis = testingWithFingerprint(difFrame.iloc[0])
@@ -727,12 +727,10 @@ def mostOccuredIPFinder(file):
 
 def testingWithFlowpic(filename):
     
-    out_path = r"E:\oneDrive\OneDrive - Higher Education Commission\ads\toolV1.2\mysite\Results\FlowPics\\"
+    out_path = os.path.join(os.getcwd(),"Results","FlowPics")
     #path_of_csv = r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models integration code\VPN.csv"
-    
-    
     path_to_file = filename
-    ImgName = path_to_file.split("\\")[-1].split(".")[0]
+    ImgName = path_to_file.split(os.path.join(" ","").split(" ")[-1])[-1].split(".")[0]
     
     Allpackets=rdpcap(path_to_file)
     moIP = mostOccuredIPFinder(path_to_file)
@@ -772,7 +770,7 @@ def testingWithFlowpic(filename):
     pltt.scatter(packet_info['Packet_Arrival'], packet_info['Packet_Length'], color= "black", marker= "s", s=30)
     bottom, top = plt.ylim()
     print(bottom, top)
-    filename = out_path + ImgName +'.png'
+    filename = os.path.join(out_path, ImgName +'.png')
     # filenameT = out_pathT+traffic_label+'_'+str(count)+'.png'
     
     pltt.savefig(filename,dpi = 60)
@@ -793,7 +791,7 @@ def testingWithFlowpic(filename):
     
     pltt.close()
 
-    model = load_model(r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\Flowpic\TrafficPatternPlotAutoModel.h5")
+    model = load_model(os.path.join(os.getcwd(),"models","Flowpic","TrafficPatternPlotAutoModel.h5"))
     # load and prepare the image
     img=load_image(filename)
     #predict images
@@ -817,7 +815,7 @@ def load_image(filename):
 
 def generate_PAT(path_to_PCAP,dirName):
    
-    out_path = r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\DF PAT\PAT-iteration.csv"
+    out_path = os.path.join(os.getcwd(),"models","DF PAT","PAT-iteration.csv")
     path_to_file = path_to_PCAP
    
     Allpackets=rdpcap(path_to_file)
@@ -865,7 +863,7 @@ def preditWithPATFingerprint(BPS_list,name):
     data = [BPS_list]
       
     # opening the csv file in 'w+' mode
-    file = open(r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\DF PAT\test_PAT test.csv", 'w', newline ='')
+    file = open(os.path.join(os.getcwd(),"models","DF PAT","test_PAT test.csv"), 'w', newline ='')
       
     # writing the data into the file
     with file:    
@@ -873,7 +871,7 @@ def preditWithPATFingerprint(BPS_list,name):
         write.writerows(data) 
     file.close()
         
-    dataorig =  pd.read_csv(r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\DF PAT\test_PAT test.csv",header=None)
+    dataorig =  pd.read_csv(os.path.join(os.getcwd(),"models","DF PAT","test_PAT test.csv"),header=None)
     data = dataorig.copy()
     data = data.iloc[:,:-1]
     labels = dataorig.iloc[:,-1].values
@@ -921,7 +919,7 @@ def preditWithPATFingerprint(BPS_list,name):
     # for i in range (1,22):
     #     data.insert((2+(i-1)*2),str(i)+"-"+str(i-1),difFrame.iloc[:,i-1])
     difFrame.insert(len(difFrame.columns), None, labels)
-    #difFrame.to_csv(r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\DF PAT\Fingerprint_PAT_"+currentdate+".csv",mode='a',encoding='utf-8',index=False,header=False)
+    #difFrame.to_csv(os.path.join(os.getcwd(),"models","DF PAT","Fingerprint_PAT_"+currentdate+".csv"),mode='a',encoding='utf-8',index=False,header=False)
     
     #print(difFrame.iloc[0])
     return testingWithFingerprintPAT(difFrame.iloc[0],name)
@@ -929,9 +927,9 @@ def preditWithPATFingerprint(BPS_list,name):
 
 def testingWithFingerprintPAT(PAT_list,video_name):
     #checking with BPS model        
-    model_path=r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\DF PAT\ADF_PAT_35946156.h5"    
+    model_path=os.path.join(os.getcwd(),"models","DF PAT","ADF_PAT_35946156.h5")    
     model = load_model(model_path)
-    with open(r"E:\oneDrive\OneDrive - Higher Education Commission\ads\models\BPS model\NonVPN_04-01-2022-10-46_9830494.pkl", "rb") as fh:
+    with open(os.path.join(os.getcwd(),"models","BPS model","stableModel_05-04-2022_10275608.pkl"), "rb") as fh:
       data = pickle.load(fh)
     l_temp=(data)
     array = PAT_list[0:21]
@@ -1005,7 +1003,7 @@ def remotePcTesting(request):
         mostOccuredIp = occurence_count.most_common(1)[0][0]
         
     print("ip is", mostOccuredIp)
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
         file = filename
@@ -1031,7 +1029,7 @@ def remotePcTesting(request):
     x = []
     y = []
     array = []
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
         plots = csv.reader(csvfile, delimiter = ',')
         print(plots) 
         for col in plots:
@@ -1069,7 +1067,7 @@ def remotePcTesting(request):
     yy = []
 
     sum=0
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
         plots = csv.reader(csvfile, delimiter = ',')
         print(plots)
         for col in plots:
@@ -1109,7 +1107,7 @@ def remotePcTesting(request):
 
     
     #packets per second 
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
            
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
@@ -1144,7 +1142,7 @@ def remotePcTesting(request):
         BPS_list.clear()
         plt.close()
     #instantaneous graph
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
         file = filename
@@ -1269,7 +1267,7 @@ def remotePcTesting(request):
     #model predication
     #------------------- df  = list of BPS -----------------
     BPS_list=[]
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
         file = filename
@@ -1402,17 +1400,17 @@ def downloadVideo(video_quality,video_name, url, duration_of_the_video):
     t_time = time.strftime("%H_%M_%S")
     funcInFile = "Test"
     #create pcap folder
-    root_path = "E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolv1.2\\mysite\\ModifiedPcapsselectedpcap\\"
+    root_path = os.path.join(os.getcwd(),"ModifiedPcapsselectedpcap","")
     #root_path = "testpcap\\"
     if not os.path.exists(root_path):
         os.makedirs(root_path)
     #create video folder    
-    video_path = root_path + video_name +"\\"
+    video_path = os.path.join(root_path, video_name,"")
     if not os.path.exists(video_path):
         os.makedirs(video_path)
     
     #create quality folder
-    quality_path =  video_path +  funcInFile + "\\"
+    quality_path =  os.path.join(video_path,  funcInFile,"")
     if not os.path.exists(quality_path):
         os.makedirs(quality_path)
     #folder = "C:\\Users\\user\\Desktop\\ranTests\\pcap\\" + video_name + "\\"+ video_quality
@@ -1519,17 +1517,17 @@ def downloadVideoRemote(video_quality,video_name, duration_of_the_video):
     t_time = time.strftime("%H_%M_%S")
     funcInFile = "Test"
     #create pcap folder
-    root_path = "E:\oneDrive\OneDrive - Higher Education Commission\\ads\\toolv1.2\\mysite\\ModifiedPcapsselectedpcap\\"
+    root_path = os.path.join(os.getcwd(),"ModifiedPcapsselectedpcap","")
     #root_path = "testpcap\\"
     if not os.path.exists(root_path):
         os.makedirs(root_path)
     #create video folder    
-    video_path = root_path + video_name +"\\"
+    video_path = os.path.join(root_path, video_name, "")
     if not os.path.exists(video_path):
         os.makedirs(video_path)
     
     #create quality folder
-    quality_path =  video_path +  funcInFile + "\\"
+    quality_path =  os.path.join(video_path ,  funcInFile , "")
     if not os.path.exists(quality_path):
         os.makedirs(quality_path)
     #folder = "C:\\Users\\user\\Desktop\\ranTests\\pcap\\" + video_name + "\\"+ video_quality #Local Area Connection* 12
@@ -1633,7 +1631,7 @@ def upload(request):
             occurence_count = Counter(uniqueB)
             mostOccuredIp = occurence_count.most_common(1)[0][0]
         print("ip is", mostOccuredIp)
-        with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
+        with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
             writer = csv.writer(csv_file)
             
             fields=["ip.src", "ip.dst", "ip.proto","frame.len"]
@@ -1660,7 +1658,7 @@ def upload(request):
     x = []
     y = []
     array = []
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
         plots = csv.reader(csvfile, delimiter = ',')
         
         for col in plots:
@@ -1699,7 +1697,7 @@ def upload(request):
     yy = []
 
     sum=0
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"),'r') as csvfile:
         plots = csv.reader(csvfile, delimiter = ',')
         print(plots)
         for col in plots:
@@ -1739,7 +1737,7 @@ def upload(request):
 
     
     #packets per second 
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
            
         
@@ -1786,7 +1784,7 @@ def upload(request):
 
 
     #instantaneous graph
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
            
        
@@ -1919,7 +1917,7 @@ def upload(request):
     #model predication
     #------------------- df  = list of BPS -----------------
     BPS_list=[]
-    with open(os.path.join(os.getcwd(),"nonVpnCsv\\NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
+    with open(os.path.join(os.getcwd(),"nonVpnCsv","NonVPN_PCAPs_1300ms.csv"), "w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         
         
